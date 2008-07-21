@@ -1,0 +1,43 @@
+Revision history for Perl extension DBIx::Admin::TableInfo.
+
+2.00  Thu Apr 20 11:19:00 2006
+	- Add primary key info
+	- Add foreign key info
+	- Rename parameters to new():
+		o table_catalog is now catalog
+		o table_schema is now schema
+		o column_catalog is now catalog
+		o column_schema is now schema
+	- Add parameters to new() to support Oracle:
+		o table
+		o type
+	- Document parameter values for:
+		o MS Access
+		o MySQL
+		o Oracle
+		o PostgreSQL
+	- Update docs
+	- Rewrite examples/test-table-info.pl to use Data::Dumper
+	- Chop examples/test-table-info.cgi because it added nothing useful to the distro
+
+1.03  Thu Oct 27 19:40:00 2005
+	- Simplify code in new() to no longer check if caller is an object
+		as per the new standard on such matters
+	- Regenerate META.yml with Module::Build V 0.2611 to correct a faulty
+		META.yml output by V 0.24 which falsely said 'provides: {}',
+		which in turn stopped the PAUSE indexer from finding the module file,
+		which in turn meant this module might be omitted from the master index:
+		ftp://pause.perl.org/pub/PAUSE/modules/01modules.index.html
+
+1.02  Mon Jul 19 14:43:00 2004
+	- Change Makefile.PL to coexist with Module::Build
+	- Add comments to the POD about having tested against MySQL V 4, MS Access V 2 (sic) and MS Access 2002
+	- Add t/pod.t to test all PODs
+
+1.01  Wed Mar  3 10:08:41 2004
+	- Add method refresh() to re-create internal data by re-calling DBI's table_info().
+		This has to be called after you change the database structure, eg by doing
+		'drop table <some table>' or something similar
+
+1.00  Tue Jan 21 12:37:29 2004
+	- Original version
