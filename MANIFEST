@@ -1,5 +1,5 @@
 Build.PL
-Changes.txt
+CHANGES
 examples/table-info.pl
 lib/DBIx/Admin/TableInfo.pm
 Makefile.PL
