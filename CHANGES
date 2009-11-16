@@ -1,5 +1,9 @@
 Revision history for Perl extension DBIx::Admin::TableInfo.
 
+2.01  Fri Nov 13 13:20:00 2009
+	- Run dos2unix
+	- Rename Changes.txt to CHANGES
+
 2.00  Thu Apr 20 11:19:00 2006
 	- Add primary key info
 	- Add foreign key info
