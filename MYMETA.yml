@@ -1,0 +1,21 @@
+---
+abstract: 'A wrapper for table_info(), column_info(), *_key_info()'
+author:
+  - 'Ron Savage <ron@savage.net.au>'
+build_requires:
+  Test::More: 0
+  Test::Pod: 0
+configure_requires:
+  Module::Build: 0.36
+dynamic_config: 0
+generated_by: 'Module::Build version 0.3603'
+license: artistic
+name: DBIx-Admin-TableInfo
+provides:
+  DBIx::Admin::TableInfo:
+    file: lib/DBIx/Admin/TableInfo.pm
+    version: 2.00
+requires:
+  Carp: 0
+  DBI: 0
+version: 2.00
