@@ -1,5 +1,8 @@
 Revision history for Perl extension DBIx::Admin::TableInfo.
 
+2.02  Wed Feb 10 14:01:44 2010
+	- MANIFEST.SKIP updated to exclude MYMETA.yml. Add MYMETA.yml.
+
 2.01  Fri Nov 13 13:20:00 2009
 	- Run dos2unix
 	- Rename Changes.txt to CHANGES
