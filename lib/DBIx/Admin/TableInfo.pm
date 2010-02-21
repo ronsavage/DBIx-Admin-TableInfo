@@ -613,10 +613,6 @@ I have written a set of modules - which are still being tested - under the DBIx:
 
 They will form the core of myadmin.cgi V 2. See http://savage.net.au/Perl-tutorials.html#tut_41
 
-=head1 Changes
-
-See Changes.txt.
-
 =head1 Author
 
 C<DBIx::Admin::TableInfo> was written by Ron Savage I<E<lt>ron@savage.net.auE<gt>> in 2004.
@@ -625,8 +621,7 @@ Home page: http://savage.net.au/index.html
 
 =head1 Copyright
 
-Australian copyright (c) 2004, Ron Savage. All rights reserved.
-
+Australian copyright (c) 2004, Ron Savage.
 	All Programs of mine are 'OSI Certified Open Source Software';
 	you can redistribute them and/or modify them under the terms of
 	The Artistic License, a copy of which is available at:
