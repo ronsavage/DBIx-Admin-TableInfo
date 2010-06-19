@@ -99,6 +99,7 @@ our $VERSION = '2.03';
 			$table_name = $$table_data{'TABLE_NAME'};
 
 			next if ( ($vendor eq 'ORACLE') && ($table_name =~ /^BIN\$.+\$./) );
+			next if ( ($vendor eq 'SQLITE') && ($table_name eq 'sqlite_sequence') );
 
 			$$self{'_info'}{$table_name}	=
 			{
@@ -262,9 +263,11 @@ __END__
 
 =head1 NAME
 
-C<DBIx::Admin::TableInfo> - A wrapper for table_info(), column_info(), *_key_info()
+C<DBIx::Admin::TableInfo> - A wrapper for all of table_info(), column_info(), *_key_info()
 
 =head1 Synopsis
+
+This program is shipped as examples/table.info.pl.
 
 	#!/usr/bin/perl
 
@@ -277,8 +280,18 @@ C<DBIx::Admin::TableInfo> - A wrapper for table_info(), column_info(), *_key_inf
 
 	# ---------------------
 
-	my($dbh)    = DBI -> connect($ENV{'DBI_DSN'}, $ENV{'DBI_USER'}, $ENV{'DBI_PASS'});
-	my($schema) = $ENV{'DBI_DSN'} =~ /^dbi:Oracle/i ? uc $ENV{'DBI_USER'} : undef;
+	my($dbh) = DBI -> connect($ENV{'DBI_DSN'}, $ENV{'DBI_USER'}, $ENV{'DBI_PASS'});
+
+	if ($ENV{'DBI_DSN'} =~ /SQLite/i)
+	{
+		$dbh -> do('PRAGMA foreign_keys = ON');
+	}
+
+	my($schema) = $ENV{'DBI_DSN'} =~ /^dbi:Oracle/i
+		? uc $ENV{'DBI_USER'}
+		: $ENV{'DBI_DSN'} =~ /^dbi:Pg/i
+		? 'public'
+		: undef;
 
 	print Data::Dumper -> Dump
 	([
@@ -289,7 +302,7 @@ C<DBIx::Admin::TableInfo> - A wrapper for table_info(), column_info(), *_key_inf
 
 C<DBIx::Admin::TableInfo> is a pure Perl module.
 
-It is a convenient wrapper around these DBI methods:
+It is a convenient wrapper around all of these DBI methods:
 
 =over 4
 
@@ -308,6 +321,44 @@ Warnings:
 =over 4
 
 =item MySQL
+
+=over 4
+
+=item New Notes
+
+I'm testing V 2.04 of this module with MySql V 5.0.51a and DBD::mysql V 4.014.
+
+To get foreign key information in the output, the create table statement has to:
+
+=over 4
+
+=item Include an index clause
+
+=item Include a foreign key clause
+
+=item Include an engine clause
+
+As an example, a column definition for Postgres and SQLite, which looks like:
+
+	site_id integer not null references sites(id),
+
+has to, for MySql, look like:
+
+	site_id integer not null, index (site_id), foreign key (site_id) references sites(id),
+
+Further, the create table statement, which for Postgres and SQLite:
+
+	create table designs (...)
+
+has to, for MySql, look like:
+
+	create table designs (...) engine=innodb
+
+You have been warned.
+
+=back
+
+=item Old Notes
 
 The MySQL client C<DBD::mysql> V 3.0002 does not support C<primary_key_info()>,
 so this module emulates it by stockpiling a list of columns which have the
@@ -331,9 +382,26 @@ preserve 'create table' clauses such as 'references other_table(other_column)'.
 
 So, at the moment, I see no way of displaying foreign key information under MySQL.
 
+=back
+
 =item Oracle
 
 Oracle table names matching /^BIN\$.+\$./ are ignored by this module.
+
+=item Postgres
+
+I'm testing V 2.04 of this module with Postgres V 08.03.1100 and DBD::Pg V 2.17.1.
+
+The latter now takes '%' as the value of the 'table' parameter to new(), whereas
+older versions of DBD::Pg required 'table' to be set to 'table'.
+
+=item SQLite
+
+I'm testing V 2.04 of this module with SQLite V 3.6.22 and DBD::SQLite V 1.29.
+
+SQLite does not currently return foreign key information.
+
+The SQLite table 'sqlite_sequence' is ignored by this module.
 
 =back
 
@@ -384,11 +452,11 @@ This parameter is mandatory.
 
 This is the value passed in as the schema parameter to table_info() and column_info().
 
+The default value is undef.
+
 Note: If you are using Oracle, call C<new()> with schema set to uc $user_name.
 
 Note: If you are using Postgres, call C<new()> with schema set to 'public'.
-
-The default value is undef.
 
 This parameter is optional.
 
@@ -398,6 +466,11 @@ This is the value passed in as the table parameter to table_info().
 
 The default value is '%'.
 
+Note: If you are using an 'old' version of DBD::Pg, call C<new()> with table set to 'table'.
+
+Sorry - I can't tell you exactly what 'old' means. As stated above, the default value (%)
+works fine with DBD::Pg V 2.17.1.
+
 This parameter is optional.
 
 =item type
@@ -405,8 +478,6 @@ This parameter is optional.
 This is the value passed in as the type parameter to table_info().
 
 The default value is 'TABLE'.
-
-Note: If you are using Postgres, call C<new()> with table set to 'table'.
 
 This parameter is optional.
 
@@ -578,10 +649,26 @@ Here are tested parameter values for various database vendors:
 	(
 		dbh    => $dbh,
 		schema => 'public',
-		table  => 'table', # Yep, lower case.
 	);
 
 	For PostgreSQL, you probably want to ignore table names matching /^(pg_|sql_)/.
+
+	As stated above, for 'old' versions of DBD::Pg, use:
+
+	my($admin) = DBIx::Admin::TableInfo -> new
+	(
+		dbh    => $dbh,
+		schema => 'public',
+		table  => 'table, # Yep, lower case.
+	);
+
+=item SQLite
+
+	my($admin) = DBIx::Admin::TableInfo -> new(dbh => $dbh);
+
+	In other words, the default values for catalog, schema, table and type will Just Work.
+
+	For SQLite, you probably want to ignore the table 'sqlite_sequence'.
 
 =back
 
@@ -589,7 +676,8 @@ See the examples/ directory in the distro.
 
 =head1 Tested Database Formats
 
-I have used the program in the synopsis to read databases in these formats:
+The first set of tests was done with C<DBIx::Admin::TableInfo> up to V 2.03, 
+using examples/table.info.pl (as per the Synopsis):
 
 =over 4
 
@@ -603,15 +691,22 @@ Yes, some businesses were still running V 2 as of July, 2004.
 
 =item Oracle V 9.2.0
 
-=item PostgreSQL V 7.3 and 8.1
+=item PostgreSQL V 7.3, 8.1
 
 =back
 
-=head1 Related Modules
+The second set of tests was done with C<DBIx::Admin::TableInfo> V 2.04, also using
+examples/table.info.pl.
 
-I have written a set of modules - which are still being tested - under the DBIx::Admin::* namespace.
+=over 4
 
-They will form the core of myadmin.cgi V 2. See http://savage.net.au/Perl-tutorials.html#tut_41
+=item MySql V 5.0.51a and DBD::mysql V 4.014
+
+=item Postgres V 08.03.1100 and DBD::Pg V 2.17.1.
+
+=item SQLite V 3.6.22 and DBD::SQLite V 1.29.
+
+=back
 
 =head1 Author
 
