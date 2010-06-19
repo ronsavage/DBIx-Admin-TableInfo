@@ -1,10 +1,11 @@
 Revision history for Perl extension DBIx::Admin::TableInfo.
 
-2.04  Fir Jun 18 13:38:00 2010
+2.04  Fri Jun 18 13:38:00 2010
 	- Test with Postgres V 08.03.1100 and DBD::Pg V 2.17.1.
 	- With Postgres, note the fact that the 'table' parameter to table_info()
 	  	   must now take the value '%' and not the value 'table'.
 	- Test with MySql V 5.0.51a and DBD::mysql V 4.014.
+	- With MySQL, create tables using these clauses: index, foreign key, engine.
 	- Test with SQLite V 3.6.22 and DBD::SQLite V 1.29.
 	- With SQLite, ignore table 'sqlite_sequence'.
 	- Update docs in various ways.
