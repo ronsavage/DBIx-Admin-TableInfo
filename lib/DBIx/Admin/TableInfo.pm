@@ -346,7 +346,7 @@ has to, for MySql, look like:
 
 	site_id integer not null, index (site_id), foreign key (site_id) references sites(id),
 
-Further, the create table statement, which for Postgres and SQLite:
+Further, the create table statement, which for Postgres and SQLite looks like:
 
 	create table designs (...)
 
@@ -489,7 +489,7 @@ Returns an array ref of column names.
 
 By default they are sorted by name.
 
-However, if you pass in a true value for $by_position, they are sorted by the column attribute ORDINAL_POSITION.
+However, if you pass in a true value for $by_position, they are sorted by the column attribute ORDINAL_POSITION. This is Postgres-specific.
 
 =head1 Method: info()
 
