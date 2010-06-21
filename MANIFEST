@@ -1,7 +1,7 @@
 Build.PL
 Changelog.ini
 CHANGES
-examples/table-info.pl
+examples/table.info.pl
 lib/DBIx/Admin/TableInfo.pm
 Makefile.PL
 MANIFEST			This list of files
