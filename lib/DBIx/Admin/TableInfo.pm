@@ -54,7 +54,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
 
 );
-our $VERSION = '2.04';
+our $VERSION = '2.05';
 
 # -----------------------------------------------
 

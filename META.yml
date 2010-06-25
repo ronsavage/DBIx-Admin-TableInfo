@@ -1,5 +1,5 @@
 ---
-abstract: 'A wrapper for table_info(), column_info(), *_key_info()'
+abstract: 'A wrapper for all of table_info(), column_info(), *_key_info()'
 author:
   - 'Ron Savage <ron@savage.net.au>'
 build_requires:
@@ -7,7 +7,7 @@ build_requires:
   Test::Pod: 0
 configure_requires:
   Module::Build: 0.36
-generated_by: 'Module::Build version 0.3603'
+generated_by: 'Module::Build version 0.3607'
 license: artistic
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -16,10 +16,10 @@ name: DBIx-Admin-TableInfo
 provides:
   DBIx::Admin::TableInfo:
     file: lib/DBIx/Admin/TableInfo.pm
-    version: 2.03
+    version: 2.05
 requires:
   Carp: 0
   DBI: 0
 resources:
-  license: http://opensource.org/licenses/artistic-license.php
-version: 2.03
+  license: http://www.perlfoundation.org/artistic_license_1_0
+version: 2.05
