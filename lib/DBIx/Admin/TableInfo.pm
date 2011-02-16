@@ -54,7 +54,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
 
 );
-our $VERSION = '2.05';
+our $VERSION = '2.06';
 
 # -----------------------------------------------
 
@@ -269,7 +269,7 @@ C<DBIx::Admin::TableInfo> - A wrapper for all of table_info(), column_info(), *_
 
 This program is shipped as examples/table.info.pl.
 
-	#!/usr/bin/perl
+	#!/usr/bin/env perl
 
 	use strict;
 	use warnings;
@@ -676,7 +676,7 @@ See the examples/ directory in the distro.
 
 =head1 Tested Database Formats
 
-The first set of tests was done with C<DBIx::Admin::TableInfo> up to V 2.03, 
+The first set of tests was done with C<DBIx::Admin::TableInfo> up to V 2.03,
 using examples/table.info.pl (as per the Synopsis):
 
 =over 4
