@@ -263,7 +263,7 @@ __END__
 
 =head1 NAME
 
-C<DBIx::Admin::TableInfo> - A wrapper for all of table_info(), column_info(), *_key_info()
+DBIx::Admin::TableInfo - A wrapper for all of table_info(), column_info(), *_key_info()
 
 =head1 Synopsis
 
