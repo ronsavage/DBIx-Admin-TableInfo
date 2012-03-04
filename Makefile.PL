@@ -8,7 +8,7 @@ WriteMakefile
 	($] ge '5.005') ?
 	(
 		'AUTHOR'	=> 'Ron Savage (ron@savage.net.au)',
-		'ABSTRACT'	=> "A wrapper around DBI's table_info() and column_info()",
+		'ABSTRACT'	=> 'A wrapper for all of table_info(), column_info(), *_key_info()',
     ) : (),
 	clean			=>
 	{
