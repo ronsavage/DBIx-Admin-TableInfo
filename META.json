@@ -3,7 +3,7 @@
    "author" : [
       "Ron Savage <ron@savage.net.au>"
    ],
-   "dynamic_config" : 0,
+   "dynamic_config" : 1,
    "generated_by" : "Module::Build version 0.4, CPAN::Meta::Converter version 2.120630",
    "license" : [
       "artistic_1"

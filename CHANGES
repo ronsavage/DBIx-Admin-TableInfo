@@ -1,5 +1,9 @@
 Revision history for Perl extension DBIx::Admin::TableInfo.
 
+2.07  Thu Jun  7  8:40:00 2012
+	- 'Use Carp' in TableInfo.pm because with call croak().
+		At least I had already put Carp in Build.PL and Makefile.PL.
+
 2.06  Web Feb 16 11:46:00 2011
 	- Replace /usr/bin/perl with /usr/bin/env perl.
 	- Replace common::sense with use strict and use warnings, to get uninit var warnings.

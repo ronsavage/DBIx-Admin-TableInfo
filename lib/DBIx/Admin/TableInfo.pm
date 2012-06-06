@@ -34,6 +34,8 @@ no warnings 'redefine';
 
 require 5.005_62;
 
+use Carp;
+
 require Exporter;
 
 our @ISA = qw(Exporter);
@@ -54,7 +56,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
 
 );
-our $VERSION = '2.06';
+our $VERSION = '2.07';
 
 # -----------------------------------------------
 
