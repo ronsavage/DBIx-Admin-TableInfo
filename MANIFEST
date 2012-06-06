@@ -5,8 +5,8 @@ examples/table.info.pl
 lib/DBIx/Admin/TableInfo.pm
 Makefile.PL
 MANIFEST			This list of files
+META.json
 META.yml
 README
 t/pod.t
 t/test.t
-META.json
