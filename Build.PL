@@ -3,7 +3,7 @@ use Module::Build;
 Module::Build -> new
 (
  module_name    => 'DBIx::Admin::TableInfo',
- license        => 'perl_5',
+ license        => 'artistic_2',
  dist_abstract  => 'A wrapper for all of table_info(), column_info(), *_key_info()',
  dist_author    => 'Ron Savage <ron@savage.net.au>',
  build_requires =>
