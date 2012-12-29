@@ -21,6 +21,7 @@ WriteMakefile
 	},
 	DISTNAME		=> 'DBIx-Admin-TableInfo',
 	NAME			=> 'DBIx::Admin::TableInfo',
+	LICENSE   => 'perl_5',
 	PL_FILES		=> {},
 	PREREQ_PM		=>
 	{
