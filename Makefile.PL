@@ -27,7 +27,7 @@ WriteMakefile
 	{
 		Carp		=> 0,
 		DBI			=> 0,
-		Test::Simple	=> 0,
+		Test::More	=> 0,
 		Test::Pod	=> 1.45,
 	},
 	VERSION_FROM	=> 'lib/DBIx/Admin/TableInfo.pm',
