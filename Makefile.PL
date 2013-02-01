@@ -28,7 +28,7 @@ WriteMakefile
 		Carp		=> 0,
 		DBI			=> 0,
 		Test::More	=> 0,
-		Test::Pod	=> 1.45,
+#		Test::Pod	=> 1.45, # Make it optional. See t/pod.t
 	},
 	VERSION_FROM	=> 'lib/DBIx/Admin/TableInfo.pm',
 );
