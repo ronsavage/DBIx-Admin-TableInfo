@@ -100,8 +100,9 @@ our $VERSION = '2.07';
 		{
 			$table_name = $$table_data{'TABLE_NAME'};
 
-			next if ( ($vendor eq 'ORACLE') && ($table_name =~ /^BIN\$.+\$./) );
-			next if ( ($vendor eq 'SQLITE') && ($table_name eq 'sqlite_sequence') );
+			next if ( ($vendor eq 'ORACLE')     && ($table_name =~ /^BIN\$.+\$./) );
+			next if ( ($vendor eq 'POSTGRESQL') && ($table_name =~ /^(?:pg_|sql_)/) );
+			next if ( ($vendor eq 'SQLITE')     && ($table_name eq 'sqlite_sequence') );
 
 			$$self{'_info'}{$table_name}	=
 			{

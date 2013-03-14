@@ -1,5 +1,8 @@
 Revision history for Perl extension DBIx::Admin::TableInfo.
 
+2.08  Thu Mar 14 15:02:00 2013
+	- Add Postgres to list of databases which have special tables skipped.
+
 2.07  Thu Jun  7  8:40:00 2012
 	- 'Use Carp' in TableInfo.pm because with call croak().
 		At least I had already put Carp in Build.PL and Makefile.PL.
