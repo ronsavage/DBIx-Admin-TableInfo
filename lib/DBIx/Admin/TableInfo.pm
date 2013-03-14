@@ -172,7 +172,7 @@ sub _info
 
 # -----------------------------------------------
 
-sub init
+sub _init
 {
 	my($self, $arg) = @_;
 	$$arg{catalog}  ||= undef;   # Caller can set.
@@ -184,7 +184,7 @@ sub init
 
 	return $self;
 
-} # End of init.
+} # End of _init.
 
 # -----------------------------------------------
 
