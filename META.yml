@@ -4,12 +4,11 @@ author:
   - 'Ron Savage <ron@savage.net.au>'
 build_requires:
   Test::More: 0
-  Test::Pod: 0
 configure_requires:
   Module::Build: 0.38
 dynamic_config: 1
-generated_by: 'Module::Build version 0.4003, CPAN::Meta::Converter version 2.120630'
-license: artistic
+generated_by: 'Module::Build version 0.4003, CPAN::Meta::Converter version 2.120921'
+license: artistic_2
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
@@ -19,8 +18,11 @@ provides:
     file: lib/DBIx/Admin/TableInfo.pm
     version: 2.07
 requires:
-  Carp: 0
   DBI: 0
+  Data::Dumper::Concise: 2.02
+  Hash::FieldHash: 0.12
+  strict: 0
+  warnings: 0
 resources:
-  license: http://www.perlfoundation.org/artistic_license_1_0
+  license: http://www.perlfoundation.org/artistic_license_2_0
 version: 2.07
