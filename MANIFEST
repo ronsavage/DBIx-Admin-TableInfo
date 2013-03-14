@@ -1,6 +1,8 @@
 Build.PL
 Changelog.ini
 CHANGES
+docs/contacts.pg.log
+docs/contacts.sqlite.log
 examples/table.info.pl
 lib/DBIx/Admin/TableInfo.pm
 Makefile.PL
