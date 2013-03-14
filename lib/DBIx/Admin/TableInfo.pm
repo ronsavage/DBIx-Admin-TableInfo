@@ -1,184 +1,18 @@
 package DBIx::Admin::TableInfo;
 
-# Name:
-#	DBIx::Admin::TableInfo.
-#
-# Documentation:
-#	POD-style documentation is at the end. Extract it with pod2html.*.
-#
-# Reference:
-#	Object Oriented Perl
-#	Damian Conway
-#	Manning
-#	1-884777-79-1
-#	P 114
-#
-# Note:
-#	o Tab = 4 spaces || die.
-#
-# Author:
-#	Ron Savage <ron@savage.net.au>
-#	Home page: http://savage.net.au/index.html
-#
-# Licence:
-#	Australian copyright (c) 2004 Ron Savage.
-#
-#	All Programs of mine are 'OSI Certified Open Source Software';
-#	you can redistribute them and/or modify them under the terms of
-#	The Artistic License, a copy of which is available at:
-#	http://www.opensource.org/licenses/index.html
-
 use strict;
 use warnings;
 no warnings 'redefine';
 
-require 5.005_62;
+use Hash::FieldHash ':all';
 
-use Carp;
+fieldhash my %catalog => 'catalog';
+fieldhash my %dbh     => 'dbh';
+fieldhash my %schema  => 'schema';
+fieldhash my %table   => 'table';
+fieldhash my %type    => 'type';
 
-require Exporter;
-
-our @ISA = qw(Exporter);
-
-# Items to export into callers namespace by default. Note: do not export
-# names by default without a very good reason. Use EXPORT_OK instead.
-# Do not simply export all your public functions/methods/constants.
-
-# This allows declaration	use DBIx::Admin::TableInfo ':all';
-# If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
-# will save memory.
-our %EXPORT_TAGS = ( 'all' => [ qw(
-
-) ] );
-
-our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
-
-our @EXPORT = qw(
-
-);
 our $VERSION = '2.07';
-
-# -----------------------------------------------
-
-# Preloaded methods go here.
-
-# -----------------------------------------------
-
-# Encapsulated class data.
-
-{
-	my(%_attr_data) =
-	(	# Alphabetical order.
-		_dbh		=> '',
-		_catalog	=> undef,
-		_schema		=> undef,
-		_table		=> '%',
-		_type		=> 'TABLE',
-	);
-
-	sub _default_for
-	{
-		my($self, $attr_name) = @_;
-
-		return $_attr_data{$attr_name};
-	}
-
-	sub _info
-	{
-		my($self)		= @_;
-		$$self{'_info'}	= {};
-		my($vendor)		= uc $$self{'_dbh'} -> get_info(17); # SQL_DBMS_NAME.
-		my($table_sth)	= $$self{'_dbh'} -> table_info($$self{'_catalog'}, $$self{'_schema'}, $$self{'_table'}, $$self{'_type'});
-
-		my($column_data, $column_name, $column_sth, $count);
-		my($foreign_table);
-		my($info);
-		my($primary_key_info);
-		my($table_data, $table_name, @table_name);
-
-		while ($table_data = $table_sth -> fetchrow_hashref() )
-		{
-			$table_name = $$table_data{'TABLE_NAME'};
-
-			next if ( ($vendor eq 'ORACLE')     && ($table_name =~ /^BIN\$.+\$./) );
-			next if ( ($vendor eq 'POSTGRESQL') && ($table_name =~ /^(?:pg_|sql_)/) );
-			next if ( ($vendor eq 'SQLITE')     && ($table_name eq 'sqlite_sequence') );
-
-			$$self{'_info'}{$table_name}	=
-			{
-				attributes		=> {%$table_data},
-				columns			=> {},
-				foreign_keys	=> {},
-				primary_keys	=> {},
-			};
-			$column_sth			= $$self{'_dbh'} -> column_info($$self{'_catalog'}, $$self{'_schema'}, $table_name, '%');
-			$primary_key_info	= [];
-
-			push @table_name, $table_name;
-
-			while ($column_data = $column_sth -> fetchrow_hashref() )
-			{
-				$column_name											= $$column_data{'COLUMN_NAME'};
-				$$self{'_info'}{$table_name}{'columns'}{$column_name}	= {%$column_data};
-
-				push @$primary_key_info, $column_name if ( ($vendor eq 'MYSQL') && $$column_data{'mysql_is_pri_key'});
-			}
-
- 			if ($vendor eq 'MYSQL')
- 			{
- 				$count = 0;
-
- 				for (@$primary_key_info)
- 				{
- 					$count++;
-
- 					$$self{'_info'}{$table_name}{'primary_keys'}{$_}				= {} if (! $$self{'_info'}{$table_name}{'primary_keys'}{$_});
- 					$$self{'_info'}{$table_name}{'primary_keys'}{$_}{'COLUMN_NAME'}	= $_;
- 					$$self{'_info'}{$table_name}{'primary_keys'}{$_}{'KEY_SEQ'}		= $count;
- 				}
-			}
-			else
-			{
-				$column_sth = $$self{'_dbh'} -> primary_key_info($$self{'_catalog'}, $$self{'_schema'}, $table_name);
-
-				if (defined $column_sth)
-				{
-					$info = $column_sth -> fetchall_arrayref({});
-
-					for $column_data (@$info)
-					{
-						$$self{'_info'}{$table_name}{'primary_keys'}{$$column_data{'COLUMN_NAME'} } = {%$column_data};
-					}
-				}
-			}
-		}
-
-		for $table_name (@table_name)
-		{
-			for $foreign_table (grep{! /^$table_name$/} @table_name)
-			{
-				$table_sth = $$self{'_dbh'} -> foreign_key_info($$self{'_catalog'}, $$self{'_schema'}, $table_name, $$self{'_catalog'}, $$self{'_schema'}, $foreign_table);
-
-				if (defined $table_sth)
-				{
-					$info = $table_sth -> fetchall_arrayref({});
-
-					for $column_data (@$info)
-					{
-						$$self{'_info'}{$table_name}{'foreign_keys'}{$foreign_table} = {%$column_data};
-					}
-				}
-			}
-		}
-
-	}	# End of _info.
-
-	sub _standard_keys
-	{
-		return keys %_attr_data;
-	}
-
-}	# End of encapsulated class data.
 
 # -----------------------------------------------
 
@@ -209,28 +43,158 @@ sub info
 
 # -----------------------------------------------
 
-sub new
+sub _info
 {
-	my($class, %arg)	= @_;
-	my($self)			= bless({}, $class);
+	my($self)		= @_;
+	$$self{'_info'}	= {};
+	my($vendor)		= uc $$self{'_dbh'} -> get_info(17); # SQL_DBMS_NAME.
+	my($table_sth)	= $$self{'_dbh'} -> table_info($$self{'_catalog'}, $$self{'_schema'}, $$self{'_table'}, $$self{'_type'});
 
-	for my $attr_name ($self -> _standard_keys() )
+	my($column_data, $column_name, $column_sth, $count);
+	my($foreign_table);
+	my($info);
+	my($primary_key_info);
+	my($table_data, $table_name, @table_name);
+
+	while ($table_data = $table_sth -> fetchrow_hashref() )
 	{
-		my($arg_name) = $attr_name =~ /^_(.*)/;
+		$table_name = $$table_data{'TABLE_NAME'};
 
-		if (exists($arg{$arg_name}) )
+		next if ( ($vendor eq 'ORACLE')     && ($table_name =~ /^BIN\$.+\$./) );
+		next if ( ($vendor eq 'POSTGRESQL') && ($table_name =~ /^(?:pg_|sql_)/) );
+		next if ( ($vendor eq 'SQLITE')     && ($table_name eq 'sqlite_sequence') );
+
+		$$self{'_info'}{$table_name}	=
 		{
-			$$self{$attr_name} = $arg{$arg_name};
+			attributes		=> {%$table_data},
+			columns			=> {},
+			foreign_keys	=> {},
+			primary_keys	=> {},
+		};
+		$column_sth			= $$self{'_dbh'} -> column_info($$self{'_catalog'}, $$self{'_schema'}, $table_name, '%');
+		$primary_key_info	= [];
+
+		push @table_name, $table_name;
+
+		while ($column_data = $column_sth -> fetchrow_hashref() )
+		{
+			$column_name											= $$column_data{'COLUMN_NAME'};
+			$$self{'_info'}{$table_name}{'columns'}{$column_name}	= {%$column_data};
+
+			push @$primary_key_info, $column_name if ( ($vendor eq 'MYSQL') && $$column_data{'mysql_is_pri_key'});
+		}
+
+		if ($vendor eq 'MYSQL')
+		{
+			$count = 0;
+
+			for (@$primary_key_info)
+			{
+				$count++;
+
+				$$self{'_info'}{$table_name}{'primary_keys'}{$_}				= {} if (! $$self{'_info'}{$table_name}{'primary_keys'}{$_});
+				$$self{'_info'}{$table_name}{'primary_keys'}{$_}{'COLUMN_NAME'}	= $_;
+				$$self{'_info'}{$table_name}{'primary_keys'}{$_}{'KEY_SEQ'}		= $count;
+			}
 		}
 		else
 		{
-			$$self{$attr_name} = $self -> _default_for($attr_name);
+			$column_sth = $$self{'_dbh'} -> primary_key_info($$self{'_catalog'}, $$self{'_schema'}, $table_name);
+
+			if (defined $column_sth)
+			{
+				$info = $column_sth -> fetchall_arrayref({});
+
+				for $column_data (@$info)
+				{
+					$$self{'_info'}{$table_name}{'primary_keys'}{$$column_data{'COLUMN_NAME'} } = {%$column_data};
+				}
+			}
 		}
 	}
 
-	croak(__PACKAGE__ . ". You must supply a value for the 'dbh' parameter") if (! $$self{'_dbh'});
+	my(%referential_action) =
+	(
+		'CASCADE'     => 0,
+		'RESTRICT'    => 1,
+		'SET NULL'    => 2,
+		'NO ACTION'   => 3,
+		'SET DEFAULT' => 4,
+	);
 
-	$self -> _info();
+	for $table_name (@table_name)
+	{
+		for $foreign_table (grep{! /^$table_name$/} @table_name)
+		{
+			if ($vendor eq 'SQLITE')
+			{
+				for my $row (@{$$self{'_dbh'} -> selectall_arrayref("pragma foreign_key_list($foreign_table)")})
+				{
+					next if ($$row[2] ne $table_name);
+
+					$$self{'_info'}{$table_name}{'foreign_keys'}{$foreign_table} =
+					{
+						DEFERABILITY      => undef,
+						DELETE_RULE       => $referential_action{$$row[6]},
+						FK_COLUMN_NAME    => $$row[3],
+						FK_DATA_TYPE      => undef,
+						FK_NAME           => undef,
+						FK_TABLE_CAT      => undef,
+						FK_TABLE_NAME     => $foreign_table,
+						FK_TABLE_SCHEM    => undef,
+						ORDINAL_POSITION  => $$row[1],
+						UK_COLUMN_NAME    => $$row[4],
+						UK_DATA_TYPE      => undef,
+						UK_NAME           => undef,
+						UK_TABLE_CAT      => undef,
+						UK_TABLE_NAME     => $table_name,
+						UK_TABLE_SCHEM    => undef,
+						UNIQUE_OR_PRIMARY => undef,
+						UPDATE_RULE       => $referential_action{$$row[5]},
+					};
+				}
+			}
+			else
+			{
+				$table_sth = $$self{'_dbh'} -> foreign_key_info($$self{'_catalog'}, $$self{'_schema'}, $table_name, $$self{'_catalog'}, $$self{'_schema'}, $foreign_table) || next;
+
+				$info = $table_sth -> fetchall_arrayref({});
+
+				for $column_data (@$info)
+				{
+					$$self{'_info'}{$table_name}{'foreign_keys'}{$foreign_table} = {%$column_data};
+				}
+			}
+		}
+	}
+
+}	# End of _info.
+
+# -----------------------------------------------
+
+sub init
+{
+	my($self, $arg) = @_;
+	$$arg{catalog}  ||= undef;   # Caller can set.
+	$$arg{dbh}      ||= '';      # Caller can set.
+	$$arg{schema}   ||= undef;   # Caller can set.
+	$$arg{table}    ||= '%';     # Caller can set.
+	$$arg{type}     ||= 'TABLE'; # Caller can set.
+	$self           = from_hash($self, $arg);
+
+	return $self;
+
+} # End of init.
+
+# -----------------------------------------------
+
+sub new
+{
+	my($class, %arg) = @_;
+	my($self)        = bless {}, $class;
+	$self            = $self -> _init(\%arg);
+
+	$self -> _info;
 
 	return $self;
 
@@ -277,18 +241,17 @@ This program is shipped as examples/table.info.pl.
 	use strict;
 	use warnings;
 
-	use Data::Dumper;
+	use Data::Dumper::Concise;
 	use DBI;
-	use DBIx::Admin::TableInfo;
+	use DBIx::Admin::TableInfo 2.08;
 
 	# ---------------------
 
-	my($dbh) = DBI -> connect($ENV{'DBI_DSN'}, $ENV{'DBI_USER'}, $ENV{'DBI_PASS'});
+	my($attr)              = {};
+	$$attr{sqlite_unicode} = 1 if ($ENV{DBI_DSN} =~ /SQLite/i);
+	my($dbh)               = DBI -> connect($ENV{DBI_DSN}, $ENV{DBI_USER}, $ENV{DBI_PASS}, $attr);
 
-	if ($ENV{'DBI_DSN'} =~ /SQLite/i)
-	{
-		$dbh -> do('PRAGMA foreign_keys = ON');
-	}
+	$dbh -> do('PRAGMA foreign_keys = ON') if ($ENV{DBI_DSN} =~ /SQLite/i);
 
 	my($schema) = $ENV{'DBI_DSN'} =~ /^dbi:Oracle/i
 		? uc $ENV{'DBI_USER'}
@@ -329,7 +292,7 @@ Warnings:
 
 =item New Notes
 
-I'm testing V 2.04 of this module with MySql V 5.0.51a and DBD::mysql V 4.014.
+I am testing V 2.04 of this module with MySql V 5.0.51a and DBD::mysql V 4.014.
 
 To get foreign key information in the output, the create table statement has to:
 
@@ -393,14 +356,14 @@ Oracle table names matching /^BIN\$.+\$./ are ignored by this module.
 
 =item Postgres
 
-I'm testing V 2.04 of this module with Postgres V 08.03.1100 and DBD::Pg V 2.17.1.
+I am testing V 2.04 of this module with Postgres V 08.03.1100 and DBD::Pg V 2.17.1.
 
 The latter now takes '%' as the value of the 'table' parameter to new(), whereas
 older versions of DBD::Pg required 'table' to be set to 'table'.
 
 =item SQLite
 
-I'm testing V 2.04 of this module with SQLite V 3.6.22 and DBD::SQLite V 1.29.
+I am testing V 2.04 of this module with SQLite V 3.6.22 and DBD::SQLite V 1.29.
 
 SQLite does not currently return foreign key information.
 
@@ -422,7 +385,7 @@ help on unpacking and installing each type of distro.
 
 new(...) returns a C<DBIx::Admin::TableInfo> object.
 
-This is the class's contructor.
+This is the class contructor.
 
 Usage: DBIx::Admin::TableInfo -> new().
 
@@ -471,7 +434,7 @@ The default value is '%'.
 
 Note: If you are using an 'old' version of DBD::Pg, call C<new()> with table set to 'table'.
 
-Sorry - I can't tell you exactly what 'old' means. As stated above, the default value (%)
+Sorry - I cannot tell you exactly what 'old' means. As stated above, the default value (%)
 works fine with DBD::Pg V 2.17.1.
 
 This parameter is optional.
@@ -513,22 +476,23 @@ I use singular names for my arrays, hence @table_name rather than @table_names.
 
 	my($table_attributes) = $$info{$table_name}{'attributes'};
 
-This is a hash ref of the table's attributes. The keys of this hash ref are determined by the database server.
+This is a hash ref of the attributes of the table.
+The keys of this hash ref are determined by the database server.
 
 	my($columns) = $$info{$table_name}{'columns'};
 
-This is a hash ref of the table's columns. The keys of this hash ref are the names of the columns.
+This is a hash ref of the columns of the table. The keys of this hash ref are the names of the columns.
 
 	my($foreign_keys) = $$info{$table_name}{'foreign_keys'};
 
-This is a hash ref of the table's foreign keys. The keys of this hash ref are the names of the tables
+This is a hash ref of the foreign keys of the table. The keys of this hash ref are the names of the tables
 which contain foreign keys pointing to $table_name.
 
 For MySQL, $foreign_keys will be the empty hash ref {}, as explained above.
 
 	my($primary_keys) = $$info{$table_name}{'primary_keys'};
 
-This is a hash ref of the table's primary keys. The keys of this hash ref are the names of the columns
+This is a hash ref of the primary keys of the table. The keys of this hash ref are the names of the columns
 which make up the primary key of $table_name.
 
 For any database server, if there is more than 1 column in the primary key, they will be numbered
@@ -662,7 +626,7 @@ Here are tested parameter values for various database vendors:
 	(
 		dbh    => $dbh,
 		schema => 'public',
-		table  => 'table, # Yep, lower case.
+		table  => 'table', # Yep, lower case.
 	);
 
 =item SQLite
@@ -710,6 +674,138 @@ examples/table.info.pl.
 =item SQLite V 3.6.22 and DBD::SQLite V 1.29.
 
 =back
+
+=head1 FAQ
+
+=head2 Does DBIx::Admin::TableInfo work with SQLite databases?
+
+Yes. As of V 2.08, this module uses SQLite's "pragma foreign_key_list($table_name)" to emulate L<DBI>'s
+$dbh -> foreign_key_info(...).
+
+=head2 What is returned by the SQLite "pragma foreign_key_list($table_name)" call?
+
+	Fields returned are:
+	0: COUNT   (0, 1, ...)
+	1: KEY_SEQ (0, or column # (1, 2, ...) within multi-column key)
+	2: FKTABLE_NAME
+	3: PKCOLUMN_NAME
+	4: FKCOLUMN_NAME
+	5: UPDATE_RULE
+	6: DELETE_RULE
+	7: 'NONE' (Constant string)
+
+As these are stored in an arrayref, I use $$row[$i] just below to refer to the elements of the array.
+
+=head2 How are these values mapped into the output?
+
+	my(%referential_action) =
+	(
+		'CASCADE'     => 0,
+		'RESTRICT'    => 1,
+		'SET NULL'    => 2,
+		'NO ACTION'   => 3,
+		'SET DEFAULT' => 4,
+	);
+
+The hashref returned for foreign keys contains these key-value pairs:
+
+	{
+		DEFERABILITY      => undef,
+		DELETE_RULE       => $referential_action{$$row[6]},
+		FK_COLUMN_NAME    => $$row[3],
+		FK_DATA_TYPE      => undef,
+		FK_NAME           => undef,
+		FK_TABLE_CAT      => undef,
+		FK_TABLE_NAME     => $foreign_table,
+		FK_TABLE_SCHEM    => undef,
+		ORDINAL_POSITION  => $$row[1],
+		UK_COLUMN_NAME    => $$row[4],
+		UK_DATA_TYPE      => undef,
+		UK_NAME           => undef,
+		UK_TABLE_CAT      => undef,
+		UK_TABLE_NAME     => $table_name,
+		UK_TABLE_SCHEM    => undef,
+		UNIQUE_OR_PRIMARY => undef,
+		UPDATE_RULE       => $referential_action{$$row[5]},
+	}
+
+This list of keys matches what is returned when processing a Postgres database.
+
+=head2 Haven't you got FK and PK backwards?
+
+No, I don't think so.
+
+Here is a method from the module L<App::Office::Contacts::Util::Create>, part of L<App::Office::Contacts>.
+
+	sub create_organizations_table
+	{
+		my($self)        = @_;
+		my($table_name)  = 'organizations';
+		my($primary_key) = $self -> creator -> generate_primary_key_sql($table_name);
+		my($engine)      = $self -> engine;
+		my($result)      = $self -> creator -> create_table(<<SQL);
+create table $table_name
+(
+	id $primary_key,
+	visibility_id integer not null references visibilities(id),
+	communication_type_id integer not null references communication_types(id),
+	creator_id integer not null,
+	role_id integer not null references roles(id),
+	deleted integer not null,
+	facebook_tag varchar(255) not null,
+	homepage varchar(255) not null,
+	name varchar(255) not null,
+	timestamp timestamp not null default localtimestamp,
+	twitter_tag varchar(255) not null,
+	upper_name varchar(255) not null
+) $engine
+SQL
+
+		$self -> dbh -> do("create index ${table_name}_upper_name on $table_name (upper_name)");
+
+		$self -> report($table_name, 'created', $result);
+
+	}	# End of create_organizations_table.
+
+Consider this line:
+
+	visibility_id integer not null references visibilities(id),
+
+That means, for the 'visibilities' table, the info() method in the current module will return a hashref like:
+
+	{
+		visibilities =>
+		{
+			...
+			foreign_keys =>
+			{
+				...
+				organizations =>
+				{
+					UK_COLUMN_NAME    => 'id',
+					DEFERABILITY      => undef,
+					ORDINAL_POSITION  => 0,
+					FK_TABLE_CAT      => undef,
+					UK_NAME           => undef,
+					UK_DATA_TYPE      => undef,
+					UNIQUE_OR_PRIMARY => undef,
+					UK_TABLE_SCHEM    => undef,
+					UK_TABLE_CAT      => undef,
+					FK_COLUMN_NAME    => 'visibility_id',
+					FK_TABLE_NAME     => 'organizations',
+					FK_TABLE_SCHEM    => undef,
+					FK_DATA_TYPE      => undef,
+					UK_TABLE_NAME     => 'visibilities',
+					DELETE_RULE       => 3,
+					FK_NAME           => undef,
+					UPDATE_RULE       => 3
+				},
+			},
+	}
+
+This is saying that for the table 'visibilities', there is a foreign key in the 'organizations' table.
+That foreign key is called 'visibility_id', and it points to the key called 'id' in the 'visibilities'
+table.
 
 =head1 Author
 

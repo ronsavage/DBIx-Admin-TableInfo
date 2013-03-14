@@ -2,6 +2,9 @@ Revision history for Perl extension DBIx::Admin::TableInfo.
 
 2.08  Thu Mar 14 15:02:00 2013
 	- Add Postgres to list of databases which have special tables skipped.
+	- Extend to handle foreign keys in SQLite, using "pragma foreign_key_list($table_name)".
+	- Add an FAQ to explain more about foreign keys.
+	- Rewrite to use Hash::FieldHash for class-building.
 
 2.07  Thu Jun  7  8:40:00 2012
 	- 'Use Carp' in TableInfo.pm because with call croak().

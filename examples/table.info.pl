@@ -3,19 +3,17 @@
 use strict;
 use warnings;
 
-use Data::Dumper;
+use Data::Dumper::Concise;
 use DBI;
-use DBIx::Admin::TableInfo 2.0;
+use DBIx::Admin::TableInfo 2.08;
 
 # ---------------------
 
-my($attr) = {};
-my($dbh)  = DBI -> connect($ENV{'DBI_DSN'}, $ENV{'DBI_USER'}, $ENV{'DBI_PASS'}, $attr);
+my($attr)              = {};
+$$attr{sqlite_unicode} = 1 if ($ENV{DBI_DSN} =~ /SQLite/i);
+my($dbh)               = DBI -> connect($ENV{DBI_DSN}, $ENV{DBI_USER}, $ENV{DBI_PASS}, $attr);
 
-if ($ENV{'DBI_DSN'} =~ /SQLite/i)
-{
-	$dbh -> do('PRAGMA foreign_keys = ON');
-}
+$dbh -> do('PRAGMA foreign_keys = ON') if ($ENV{DBI_DSN} =~ /SQLite/i);
 
 my($schema) = $ENV{'DBI_DSN'} =~ /^dbi:Oracle/i
 	? uc $ENV{'DBI_USER'}
