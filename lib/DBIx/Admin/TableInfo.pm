@@ -24,11 +24,11 @@ sub columns
 
 	if ($by_position)
 	{
-		return [sort{$$info{$table}{'columns'}{$a}{'ORDINAL_POSITION'} <=> $$info{$table}{'columns'}{$b}{'ORDINAL_POSITION'} } keys %{$$info{$table}{'columns'} }];
+		return [sort{$$info{$table}{columns}{$a}{ORDINAL_POSITION} <=> $$info{$table}{columns}{$b}{ORDINAL_POSITION} } keys %{$$info{$table}{columns} }];
 	}
 	else
 	{
-		return [sort{$a cmp $b} keys %{$$info{$table}{'columns'} }];
+		return [sort{$a cmp $b} keys %{$$info{$table}{columns} }];
 	}
 
 }	# End of columns.
@@ -49,13 +49,13 @@ sub _info
 
 	while ($table_data = $table_sth -> fetchrow_hashref() )
 	{
-		$table_name = $$table_data{'TABLE_NAME'};
+		$table_name = $$table_data{TABLE_NAME};
 
 		next if ( ($vendor eq 'ORACLE')     && ($table_name =~ /^BIN\$.+\$./) );
 		next if ( ($vendor eq 'POSTGRESQL') && ($table_name =~ /^(?:pg_|sql_)/) );
 		next if ( ($vendor eq 'SQLITE')     && ($table_name eq 'sqlite_sequence') );
 
-		$$info{$table_name}	=
+		$$info{$table_name} =
 		{
 			attributes   => {%$table_data},
 			columns      => {},
@@ -69,10 +69,10 @@ sub _info
 
 		while ($column_data = $column_sth -> fetchrow_hashref() )
 		{
-			$column_name                                 = $$column_data{'COLUMN_NAME'};
-			$$info{$table_name}{'columns'}{$column_name} = {%$column_data};
+			$column_name                               = $$column_data{COLUMN_NAME};
+			$$info{$table_name}{columns}{$column_name} = {%$column_data};
 
-			push @$primary_key_info, $column_name if ( ($vendor eq 'MYSQL') && $$column_data{'mysql_is_pri_key'});
+			push @$primary_key_info, $column_name if ( ($vendor eq 'MYSQL') && $$column_data{mysql_is_pri_key});
 		}
 
 		if ($vendor eq 'MYSQL')
@@ -83,9 +83,9 @@ sub _info
 			{
 				$count++;
 
-				$$info{$table_name}{'primary_keys'}{$_}                = {} if (! $$info{$table_name}{'primary_keys'}{$_});
-				$$info{$table_name}{'primary_keys'}{$_}{'COLUMN_NAME'} = $_;
-				$$info{$table_name}{'primary_keys'}{$_}{'KEY_SEQ'}     = $count;
+				$$info{$table_name}{primary_keys}{$_}              = {} if (! $$info{$table_name}{primary_keys}{$_});
+				$$info{$table_name}{primary_keys}{$_}{COLUMN_NAME} = $_;
+				$$info{$table_name}{primary_keys}{$_}{KEY_SEQ}     = $count;
 			}
 		}
 		else
@@ -94,11 +94,9 @@ sub _info
 
 			if (defined $column_sth)
 			{
-				$info = $column_sth -> fetchall_arrayref({});
-
-				for $column_data (@$info)
+				for $column_data (@{$column_sth -> fetchall_arrayref({})})
 				{
-					$$info{$table_name}{'primary_keys'}{$$column_data{'COLUMN_NAME'} } = {%$column_data};
+					$$info{$table_name}{primary_keys}{$$column_data{COLUMN_NAME} } = {%$column_data};
 				}
 			}
 		}
@@ -123,7 +121,7 @@ sub _info
 				{
 					next if ($$row[2] ne $table_name);
 
-					$$info{$table_name}{'foreign_keys'}{$foreign_table} =
+					$$info{$table_name}{foreign_keys}{$foreign_table} =
 					{
 						DEFERABILITY      => undef,
 						DELETE_RULE       => $referential_action{$$row[6]},
@@ -149,11 +147,9 @@ sub _info
 			{
 				$table_sth = $self -> dbh -> foreign_key_info($self -> catalog, $self -> schema, $table_name, $self -> catalog, $self -> schema, $foreign_table) || next;
 
-				$info = $table_sth -> fetchall_arrayref({});
-
-				for $column_data (@$info)
+				for $column_data (@{$table_sth -> fetchall_arrayref({})})
 				{
-					$$info{$table_name}{'foreign_keys'}{$foreign_table} = {%$column_data};
+					$$info{$table_name}{foreign_keys}{$foreign_table} = {%$column_data};
 				}
 			}
 		}
@@ -249,9 +245,9 @@ This program is shipped as examples/table.info.pl.
 
 	$dbh -> do('PRAGMA foreign_keys = ON') if ($ENV{DBI_DSN} =~ /SQLite/i);
 
-	my($schema) = $ENV{'DBI_DSN'} =~ /^dbi:Oracle/i
-		? uc $ENV{'DBI_USER'}
-		: $ENV{'DBI_DSN'} =~ /^dbi:Pg/i
+	my($schema) = $ENV{DBI_DSN} =~ /^dbi:Oracle/i
+		? uc $ENV{DBI_USER}
+		: $ENV{DBI_DSN} =~ /^dbi:Pg/i
 		? 'public'
 		: undef;
 
@@ -259,6 +255,9 @@ This program is shipped as examples/table.info.pl.
 	([
 		DBIx::Admin::TableInfo -> new(dbh => $dbh, schema => $schema) -> info()
 	]);
+
+See docs/contacts.*.log for sample output. The input to these runs is the database created by the module
+L<App::Office::Contacts>, with its config file first set for Postgres and then for SQLite.
 
 =head1 Description
 
@@ -348,7 +347,7 @@ So, at the moment, I see no way of displaying foreign key information under MySQ
 
 =item Oracle
 
-Oracle table names matching /^BIN\$.+\$./ are ignored by this module.
+See the L</FAQ> for which tables are ignored under Oracle.
 
 =item Postgres
 
@@ -357,13 +356,13 @@ I am testing V 2.04 of this module with Postgres V 08.03.1100 and DBD::Pg V 2.17
 The latter now takes '%' as the value of the 'table' parameter to new(), whereas
 older versions of DBD::Pg required 'table' to be set to 'table'.
 
+See the L</FAQ> for which tables are ignored under Postgres.
+
 =item SQLite
 
 I am testing V 2.04 of this module with SQLite V 3.6.22 and DBD::SQLite V 1.29.
 
-SQLite does not currently return foreign key information.
-
-The SQLite table 'sqlite_sequence' is ignored by this module.
+See the L</FAQ> for which tables are ignored under SQLite.
 
 =back
 
@@ -470,23 +469,23 @@ I use singular names for my arrays, hence @table_name rather than @table_names.
 
 =item Second level: The keys are 'attributes', 'columns', 'foreign_keys' and 'primary_keys'
 
-	my($table_attributes) = $$info{$table_name}{'attributes'};
+	my($table_attributes) = $$info{$table_name}{attributes};
 
 This is a hash ref of the attributes of the table.
 The keys of this hash ref are determined by the database server.
 
-	my($columns) = $$info{$table_name}{'columns'};
+	my($columns) = $$info{$table_name}{columns};
 
 This is a hash ref of the columns of the table. The keys of this hash ref are the names of the columns.
 
-	my($foreign_keys) = $$info{$table_name}{'foreign_keys'};
+	my($foreign_keys) = $$info{$table_name}{foreign_keys};
 
 This is a hash ref of the foreign keys of the table. The keys of this hash ref are the names of the tables
 which contain foreign keys pointing to $table_name.
 
 For MySQL, $foreign_keys will be the empty hash ref {}, as explained above.
 
-	my($primary_keys) = $$info{$table_name}{'primary_keys'};
+	my($primary_keys) = $$info{$table_name}{primary_keys};
 
 This is a hash ref of the primary keys of the table. The keys of this hash ref are the names of the columns
 which make up the primary key of $table_name.
@@ -499,7 +498,7 @@ according to the order in which they are returned by C<column_info()>, as explai
 
 =item Third level, after 'attributes': Table attributes
 
-	my($table_attributes) = $$info{$table_name}{'attributes'};
+	my($table_attributes) = $$info{$table_name}{attributes};
 
 	while ( ($name, $value) = each(%$table_attributes) )
 	{
@@ -510,7 +509,7 @@ For the attributes of the tables, there are no more levels in the hash ref.
 
 =item Third level, after 'columns': The keys are the names of the columns.
 
-	my($columns) = $$info{$table_name}{'columns'};
+	my($columns) = $$info{$table_name}{columns};
 
 	my(@column_name) = sort keys %$columns;
 
@@ -532,7 +531,7 @@ For the attributes of the tables, there are no more levels in the hash ref.
 
 These tables have foreign keys which point to the current table.
 
-	my($foreign_keys) = $$info{$table_name}{'foreign_keys'};
+	my($foreign_keys) = $$info{$table_name}{foreign_keys};
 
 	for $foreign_table (sort keys %$foreign_keys)
 	{
@@ -548,9 +547,9 @@ These tables have foreign keys which point to the current table.
 
 These columns make up the primary key of the current table.
 
-	my($primary_keys) = $$info{$table_name}{'primary_keys'};
+	my($primary_keys) = $$info{$table_name}{primary_keys};
 
-	for $primary_key (sort{$$a{'KEY_SEQ'} <=> $$b{'KEY_SEQ'} } keys %$primary_keys)
+	for $primary_key (sort{$$a{KEY_SEQ} <=> $$b{KEY_SEQ} } keys %$primary_keys)
 	{
 		$primary = $$primary_keys{$primary_key};
 
@@ -575,7 +574,7 @@ Returns an array ref of table names.
 
 They are sorted by name.
 
-Warning: Oracle table names matching /^BIN\$.+\$./ are ignored by this module.
+See the L</FAQ> for which tables are ignored under which databases.
 
 =head1 Example code
 
@@ -604,7 +603,7 @@ Here are tested parameter values for various database vendors:
 		schema => uc $username, # Yep, upper case.
 	);
 
-	For Oracle, you probably want to ignore table names matching /^BIN\$.+\$./.
+	See the FAQ for which tables are ignored under Oracle.
 
 =item PostgreSQL
 
@@ -625,13 +624,15 @@ Here are tested parameter values for various database vendors:
 		table  => 'table', # Yep, lower case.
 	);
 
+	See the FAQ for which tables are ignored under Postgres.
+
 =item SQLite
 
 	my($admin) = DBIx::Admin::TableInfo -> new(dbh => $dbh);
 
 	In other words, the default values for catalog, schema, table and type will Just Work.
 
-	For SQLite, you probably want to ignore the table 'sqlite_sequence'.
+	See the FAQ for which tables are ignored under SQLite.
 
 =back
 
@@ -672,6 +673,14 @@ examples/table.info.pl.
 =back
 
 =head1 FAQ
+
+=head2 Which tables are ignored for which databases?
+
+Here is the code which skips some tables:
+
+	next if ( ($vendor eq 'ORACLE')     && ($table_name =~ /^BIN\$.+\$./) );
+	next if ( ($vendor eq 'POSTGRESQL') && ($table_name =~ /^(?:pg_|sql_)/) );
+	next if ( ($vendor eq 'SQLITE')     && ($table_name eq 'sqlite_sequence') );
 
 =head2 Does DBIx::Admin::TableInfo work with SQLite databases?
 
