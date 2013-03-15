@@ -267,13 +267,13 @@ It is a convenient wrapper around all of these DBI methods:
 
 =over 4
 
-=item table_info()
+=item o table_info()
 
-=item column_info()
+=item o column_info()
 
-=item primary_key_info()
+=item o primary_key_info()
 
-=item foreign_key_info()
+=item o foreign_key_info()
 
 =back
 
@@ -281,11 +281,11 @@ Warnings:
 
 =over 4
 
-=item MySQL
+=item o MySQL
 
 =over 4
 
-=item New Notes
+=item o New Notes
 
 I am testing V 2.04 of this module with MySql V 5.0.51a and DBD::mysql V 4.014.
 
@@ -293,11 +293,11 @@ To get foreign key information in the output, the create table statement has to:
 
 =over 4
 
-=item Include an index clause
+=item o Include an index clause
 
-=item Include a foreign key clause
+=item o Include a foreign key clause
 
-=item Include an engine clause
+=item o Include an engine clause
 
 As an example, a column definition for Postgres and SQLite, which looks like:
 
@@ -319,7 +319,7 @@ You have been warned.
 
 =back
 
-=item Old Notes
+=item o Old Notes
 
 The MySQL client C<DBD::mysql> V 3.0002 does not support C<primary_key_info()>,
 so this module emulates it by stockpiling a list of columns which have the
@@ -345,11 +345,11 @@ So, at the moment, I see no way of displaying foreign key information under MySQ
 
 =back
 
-=item Oracle
+=item o Oracle
 
 See the L</FAQ> for which tables are ignored under Oracle.
 
-=item Postgres
+=item o Postgres
 
 I am testing V 2.04 of this module with Postgres V 08.03.1100 and DBD::Pg V 2.17.1.
 
@@ -358,7 +358,7 @@ older versions of DBD::Pg required 'table' to be set to 'table'.
 
 See the L</FAQ> for which tables are ignored under Postgres.
 
-=item SQLite
+=item o SQLite
 
 I am testing V 2.04 of this module with SQLite V 3.6.22 and DBD::SQLite V 1.29.
 
@@ -390,7 +390,7 @@ For each parameter you wish to use, call new as new(param_1 => value_1, ...).
 
 =over 4
 
-=item catalog
+=item o catalog
 
 This is the value passed in as the catalog parameter to table_info() and column_info().
 
@@ -403,13 +403,13 @@ even though the DBI docs say an empty string can be used for the catalog paramet
 
 This parameter is optional.
 
-=item dbh
+=item o dbh
 
 This is a database handle.
 
 This parameter is mandatory.
 
-=item schema
+=item o schema
 
 This is the value passed in as the schema parameter to table_info() and column_info().
 
@@ -421,7 +421,7 @@ Note: If you are using Postgres, call C<new()> with schema set to 'public'.
 
 This parameter is optional.
 
-=item table
+=item o table
 
 This is the value passed in as the table parameter to table_info().
 
@@ -434,7 +434,7 @@ works fine with DBD::Pg V 2.17.1.
 
 This parameter is optional.
 
-=item type
+=item o type
 
 This is the value passed in as the type parameter to table_info().
 
@@ -460,14 +460,14 @@ The structure of this hash is described next:
 
 =over 4
 
-=item First level: The keys are the names of the tables
+=item o First level: The keys are the names of the tables
 
 	my($info)       = $obj -> info();
 	my(@table_name) = sort keys %$info;
 
 I use singular names for my arrays, hence @table_name rather than @table_names.
 
-=item Second level: The keys are 'attributes', 'columns', 'foreign_keys' and 'primary_keys'
+=item o Second level: The keys are 'attributes', 'columns', 'foreign_keys' and 'primary_keys'
 
 	my($table_attributes) = $$info{$table_name}{attributes};
 
@@ -496,7 +496,7 @@ For any database server, if there is more than 1 column in the primary key, they
 For MySQL, if there is more than 1 column in the primary key, they will be artificially numbered
 according to the order in which they are returned by C<column_info()>, as explained above.
 
-=item Third level, after 'attributes': Table attributes
+=item o Third level, after 'attributes': Table attributes
 
 	my($table_attributes) = $$info{$table_name}{attributes};
 
@@ -507,7 +507,7 @@ according to the order in which they are returned by C<column_info()>, as explai
 
 For the attributes of the tables, there are no more levels in the hash ref.
 
-=item Third level, after 'columns': The keys are the names of the columns.
+=item o Third level, after 'columns': The keys are the names of the columns.
 
 	my($columns) = $$info{$table_name}{columns};
 
@@ -515,7 +515,7 @@ For the attributes of the tables, there are no more levels in the hash ref.
 
 =over 4
 
-=item Fourth level: Column attributes
+=item o Fourth level: Column attributes
 
 	for $column_name (@column_name)
 	{
@@ -527,7 +527,7 @@ For the attributes of the tables, there are no more levels in the hash ref.
 
 =back
 
-=item Third level, after 'foreign_keys': The keys are the names of tables
+=item o Third level, after 'foreign_keys': The keys are the names of tables
 
 These tables have foreign keys which point to the current table.
 
@@ -543,7 +543,7 @@ These tables have foreign keys which point to the current table.
 		}
 	}
 
-=item Third level, after 'primary_keys': The keys are the names of columns
+=item o Third level, after 'primary_keys': The keys are the names of columns
 
 These columns make up the primary key of the current table.
 
@@ -582,19 +582,19 @@ Here are tested parameter values for various database vendors:
 
 =over 4
 
-=item MS Access
+=item o MS Access
 
 	my($admin) = DBIx::Admin::TableInfo -> new(dbh => $dbh);
 
 	In other words, the default values for catalog, schema, table and type will Just Work.
 
-=item MySQL
+=item o MySQL
 
 	my($admin) = DBIx::Admin::TableInfo -> new(dbh => $dbh);
 
 	In other words, the default values for catalog, schema, table and type will Just Work.
 
-=item Oracle
+=item o Oracle
 
 	my($dbh)   = DBI -> connect($dsn, $username, $password);
 	my($admin) = DBIx::Admin::TableInfo -> new
@@ -605,7 +605,7 @@ Here are tested parameter values for various database vendors:
 
 	See the FAQ for which tables are ignored under Oracle.
 
-=item PostgreSQL
+=item o PostgreSQL
 
 	my($admin) = DBIx::Admin::TableInfo -> new
 	(
@@ -626,7 +626,7 @@ Here are tested parameter values for various database vendors:
 
 	See the FAQ for which tables are ignored under Postgres.
 
-=item SQLite
+=item o SQLite
 
 	my($admin) = DBIx::Admin::TableInfo -> new(dbh => $dbh);
 
@@ -645,17 +645,17 @@ using examples/table.info.pl (as per the Synopsis):
 
 =over 4
 
-=item MS Access V 2
+=item o MS Access V 2
 
 Yes, some businesses were still running V 2 as of July, 2004.
 
-=item MS Access V 2002 and V 2003
+=item o MS Access V 2002 and V 2003
 
-=item MySQL V 4 and V 5
+=item o MySQL V 4 and V 5
 
-=item Oracle V 9.2.0
+=item o Oracle V 9.2.0
 
-=item PostgreSQL V 7.3, 8.1
+=item o PostgreSQL V 7.3, 8.1
 
 =back
 
@@ -664,11 +664,11 @@ examples/table.info.pl.
 
 =over 4
 
-=item MySql V 5.0.51a and DBD::mysql V 4.014
+=item o MySql V 5.0.51a and DBD::mysql V 4.014
 
-=item Postgres V 08.03.1100 and DBD::Pg V 2.17.1.
+=item o Postgres V 08.03.1100 and DBD::Pg V 2.17.1.
 
-=item SQLite V 3.6.22 and DBD::SQLite V 1.29.
+=item o SQLite V 3.6.22 and DBD::SQLite V 1.29.
 
 =back
 
