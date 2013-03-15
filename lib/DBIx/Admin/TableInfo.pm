@@ -8,6 +8,7 @@ use Hash::FieldHash ':all';
 
 fieldhash my %catalog => 'catalog';
 fieldhash my %dbh     => 'dbh';
+fieldhash my %info    => 'info';
 fieldhash my %schema  => 'schema';
 fieldhash my %table   => 'table';
 fieldhash my %type    => 'type';
@@ -19,36 +20,27 @@ our $VERSION = '2.08';
 sub columns
 {
 	my($self, $table, $by_position) = @_;
+	my($info) = $self -> info;
 
 	if ($by_position)
 	{
-		return [sort{$$self{'_info'}{$table}{'columns'}{$a}{'ORDINAL_POSITION'} <=> $$self{'_info'}{$table}{'columns'}{$b}{'ORDINAL_POSITION'} } keys %{$$self{'_info'}{$table}{'columns'} }];
+		return [sort{$$info{$table}{'columns'}{$a}{'ORDINAL_POSITION'} <=> $$info{$table}{'columns'}{$b}{'ORDINAL_POSITION'} } keys %{$$info{$table}{'columns'} }];
 	}
 	else
 	{
-		return [sort{$a cmp $b} keys %{$$self{'_info'}{$table}{'columns'} }];
+		return [sort{$a cmp $b} keys %{$$info{$table}{'columns'} }];
 	}
 
 }	# End of columns.
 
 # -----------------------------------------------
 
-sub info
-{
-	my($self) = @_;
-
-	return $$self{'_info'};
-
-}	# End of info.
-
-# -----------------------------------------------
-
 sub _info
 {
-	my($self)		= @_;
-	$$self{'_info'}	= {};
-	my($vendor)		= uc $$self{'_dbh'} -> get_info(17); # SQL_DBMS_NAME.
-	my($table_sth)	= $$self{'_dbh'} -> table_info($$self{'_catalog'}, $$self{'_schema'}, $$self{'_table'}, $$self{'_type'});
+	my($self)      = @_;
+	my($info)      = {};
+	my($vendor)    = uc $self -> dbh -> get_info(17); # SQL_DBMS_NAME.
+	my($table_sth) = $self -> dbh -> table_info($self -> catalog, $self -> schema, $self -> table, $self -> type);
 
 	my($column_data, $column_name, $column_sth, $count);
 	my($foreign_table);
@@ -64,22 +56,22 @@ sub _info
 		next if ( ($vendor eq 'POSTGRESQL') && ($table_name =~ /^(?:pg_|sql_)/) );
 		next if ( ($vendor eq 'SQLITE')     && ($table_name eq 'sqlite_sequence') );
 
-		$$self{'_info'}{$table_name}	=
+		$$info{$table_name}	=
 		{
-			attributes		=> {%$table_data},
-			columns			=> {},
-			foreign_keys	=> {},
-			primary_keys	=> {},
+			attributes   => {%$table_data},
+			columns      => {},
+			foreign_keys => {},
+			primary_keys => {},
 		};
-		$column_sth			= $$self{'_dbh'} -> column_info($$self{'_catalog'}, $$self{'_schema'}, $table_name, '%');
-		$primary_key_info	= [];
+		$column_sth       = $self -> dbh -> column_info($self -> catalog, $self -> schema, $table_name, '%');
+		$primary_key_info = [];
 
 		push @table_name, $table_name;
 
 		while ($column_data = $column_sth -> fetchrow_hashref() )
 		{
-			$column_name											= $$column_data{'COLUMN_NAME'};
-			$$self{'_info'}{$table_name}{'columns'}{$column_name}	= {%$column_data};
+			$column_name                                 = $$column_data{'COLUMN_NAME'};
+			$$info{$table_name}{'columns'}{$column_name} = {%$column_data};
 
 			push @$primary_key_info, $column_name if ( ($vendor eq 'MYSQL') && $$column_data{'mysql_is_pri_key'});
 		}
@@ -92,14 +84,14 @@ sub _info
 			{
 				$count++;
 
-				$$self{'_info'}{$table_name}{'primary_keys'}{$_}				= {} if (! $$self{'_info'}{$table_name}{'primary_keys'}{$_});
-				$$self{'_info'}{$table_name}{'primary_keys'}{$_}{'COLUMN_NAME'}	= $_;
-				$$self{'_info'}{$table_name}{'primary_keys'}{$_}{'KEY_SEQ'}		= $count;
+				$$info{$table_name}{'primary_keys'}{$_}                = {} if (! $$info{$table_name}{'primary_keys'}{$_});
+				$$info{$table_name}{'primary_keys'}{$_}{'COLUMN_NAME'} = $_;
+				$$info{$table_name}{'primary_keys'}{$_}{'KEY_SEQ'}     = $count;
 			}
 		}
 		else
 		{
-			$column_sth = $$self{'_dbh'} -> primary_key_info($$self{'_catalog'}, $$self{'_schema'}, $table_name);
+			$column_sth = $self -> dbh -> primary_key_info($self -> catalog, $self -> schema, $table_name);
 
 			if (defined $column_sth)
 			{
@@ -107,7 +99,7 @@ sub _info
 
 				for $column_data (@$info)
 				{
-					$$self{'_info'}{$table_name}{'primary_keys'}{$$column_data{'COLUMN_NAME'} } = {%$column_data};
+					$$info{$table_name}{'primary_keys'}{$$column_data{'COLUMN_NAME'} } = {%$column_data};
 				}
 			}
 		}
@@ -128,11 +120,11 @@ sub _info
 		{
 			if ($vendor eq 'SQLITE')
 			{
-				for my $row (@{$$self{'_dbh'} -> selectall_arrayref("pragma foreign_key_list($foreign_table)")})
+				for my $row (@{$self -> dbh -> selectall_arrayref("pragma foreign_key_list($foreign_table)")})
 				{
 					next if ($$row[2] ne $table_name);
 
-					$$self{'_info'}{$table_name}{'foreign_keys'}{$foreign_table} =
+					$$info{$table_name}{'foreign_keys'}{$foreign_table} =
 					{
 						DEFERABILITY      => undef,
 						DELETE_RULE       => $referential_action{$$row[6]},
@@ -156,17 +148,19 @@ sub _info
 			}
 			else
 			{
-				$table_sth = $$self{'_dbh'} -> foreign_key_info($$self{'_catalog'}, $$self{'_schema'}, $table_name, $$self{'_catalog'}, $$self{'_schema'}, $foreign_table) || next;
+				$table_sth = $self -> dbh -> foreign_key_info($self -> catalog, $self -> schema, $table_name, $self -> catalog, $self -> schema, $foreign_table) || next;
 
 				$info = $table_sth -> fetchall_arrayref({});
 
 				for $column_data (@$info)
 				{
-					$$self{'_info'}{$table_name}{'foreign_keys'}{$foreign_table} = {%$column_data};
+					$$info{$table_name}{'foreign_keys'}{$foreign_table} = {%$column_data};
 				}
 			}
 		}
 	}
+
+	$self -> info($info);
 
 }	# End of _info.
 
@@ -177,10 +171,13 @@ sub _init
 	my($self, $arg) = @_;
 	$$arg{catalog}  ||= undef;   # Caller can set.
 	$$arg{dbh}      ||= '';      # Caller can set.
+	$$arg{info}     = {};
 	$$arg{schema}   ||= undef;   # Caller can set.
 	$$arg{table}    ||= '%';     # Caller can set.
 	$$arg{type}     ||= 'TABLE'; # Caller can set.
 	$self           = from_hash($self, $arg);
+
+	die "The 'dbh' parameter to new() is mandatory\n" if (! $self -> dbh);
 
 	return $self;
 
@@ -208,7 +205,7 @@ sub refresh
 
 	$self -> _info();
 
-	return $$self{'_info'};
+	return $self -> info;
 
 }	# End of refresh.
 
@@ -218,7 +215,7 @@ sub tables
 {
 	my($self) = @_;
 
-	return [sort keys %{$$self{'_info'} }];
+	return [sort keys %{$self -> info}];
 
 }	# End of tables.
 
