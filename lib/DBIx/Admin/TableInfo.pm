@@ -44,7 +44,6 @@ sub _info
 
 	my($column_data, $column_name, $column_sth, $count);
 	my($foreign_table);
-	my($info);
 	my($primary_key_info);
 	my($table_data, $table_name, @table_name);
 
