@@ -15,10 +15,10 @@ my($dbh)               = DBI -> connect($ENV{DBI_DSN}, $ENV{DBI_USER}, $ENV{DBI_
 
 $dbh -> do('PRAGMA foreign_keys = ON') if ($ENV{DBI_DSN} =~ /SQLite/i);
 
-my($schema) = $ENV{'DBI_DSN'} =~ /^dbi:Oracle/i
-	? uc $ENV{'DBI_USER'}
-	: $ENV{'DBI_DSN'} =~ /^dbi:Pg/i
-	? 'public'
+my($schema) = $ENV{DBI_DSN} =~ /^dbi:Oracle/i
+	? uc $ENV{DBI_USER}
+	: $ENV{DBI_DSN} =~ /^dbi:Pg/i
+	? ($ENV{DBI_SCHEMA} || 'public')
 	: undef;
 
 print Data::Dumper -> Dump([DBIx::Admin::TableInfo -> new(dbh => $dbh, schema => $schema) -> info()]);
