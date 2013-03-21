@@ -13,7 +13,7 @@ fieldhash my %schema  => 'schema';
 fieldhash my %table   => 'table';
 fieldhash my %type    => 'type';
 
-our $VERSION = '2.08';
+our $VERSION = '2.09';
 
 # -----------------------------------------------
 
