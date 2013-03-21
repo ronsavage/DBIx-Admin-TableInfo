@@ -16,7 +16,7 @@ name: DBIx-Admin-TableInfo
 provides:
   DBIx::Admin::TableInfo:
     file: lib/DBIx/Admin/TableInfo.pm
-    version: 2.08
+    version: 2.09
 requires:
   DBI: 0
   Data::Dumper::Concise: 2.02
@@ -25,4 +25,4 @@ requires:
   warnings: 0
 resources:
   license: http://www.perlfoundation.org/artistic_license_2_0
-version: 2.08
+version: 2.09
