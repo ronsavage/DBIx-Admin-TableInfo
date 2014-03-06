@@ -111,7 +111,7 @@ SQL
 create table $table_name
 (
 	id     $primary_key,
-	one_id integer not null greferences one(id),
+	one_id integer not null references one(id),
 	data   varchar(255)
 )
 SQL

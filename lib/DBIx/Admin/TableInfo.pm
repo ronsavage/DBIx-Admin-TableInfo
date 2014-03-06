@@ -711,6 +711,58 @@ examples/table.info.pl.
 
 =head1 FAQ
 
+=head2 How do I identify foreign key?
+
+=head3 MySQL
+
+=head3 Postgres
+
+#   foreign_keys => {
+#     two => {
+#       DEFERABILITY => 7,
+#       DELETE_RULE => 3,
+#       FK_COLUMN_NAME => "one_id",
+#       FK_DATA_TYPE => "int4",
+#       FK_NAME => "two_one_id_fkey",
+#       FK_TABLE_CAT => undef,
+#       FK_TABLE_NAME => "two",
+#       FK_TABLE_SCHEM => "public",
+#       ORDINAL_POSITION => 1,
+#       UK_COLUMN_NAME => "id",
+#       UK_DATA_TYPE => "int4",
+#       UK_NAME => "one_pkey",
+#       UK_TABLE_CAT => undef,
+#       UK_TABLE_NAME => "one",
+#       UK_TABLE_SCHEM => "public",
+#       UNIQUE_OR_PRIMARY => "PRIMARY",
+#       UPDATE_RULE => 3
+#     }
+#   },
+
+=head3 SQLite
+
+#   foreign_keys => {
+#     two => {
+#       DEFERABILITY => undef,
+#       DELETE_RULE => 3,
+#       FK_COLUMN_NAME => "one_id",
+#       FK_DATA_TYPE => undef,
+#       FK_NAME => undef,
+#       FK_TABLE_CAT => undef,
+#       FK_TABLE_NAME => "two",
+#       FK_TABLE_SCHEM => undef,
+#       ORDINAL_POSITION => 0,
+#       UK_COLUMN_NAME => "id",
+#       UK_DATA_TYPE => undef,
+#       UK_NAME => undef,
+#       UK_TABLE_CAT => undef,
+#       UK_TABLE_NAME => "one",
+#       UK_TABLE_SCHEM => undef,
+#       UNIQUE_OR_PRIMARY => undef,
+#       UPDATE_RULE => 3
+#     }
+#   },
+
 =head2 Which tables are ignored for which databases?
 
 Here is the code which skips some tables:
