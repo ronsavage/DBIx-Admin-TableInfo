@@ -1,3 +1,6 @@
+use strict;
+use warnings;
+
 use ExtUtils::MakeMaker;
 
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
@@ -25,13 +28,15 @@ WriteMakefile
 	PL_FILES		=> {},
 	PREREQ_PM		=>
 	{
-		Data::Dumper::Concise => 2.020,
-		DBI                   => 0,
-		Hash::FieldHash       => 0.12,
-		strict                => 0,
-		Test::More	          => 0,
-#		Test::Pod	          => 1.45, # Make it optional. See t/pod.t
-		warnings              => 0,
+		'Data::Dumper::Concise'    => 2.021,
+		'DBI'                      => 0,
+		'DBIx::Admin::CreateTable' => 2.09,
+		'DBIx::Admin::DSNManager'  => 2.00,
+		'Moo'                      => 1.004002,
+		'strict'                   => 0,
+		'Test::More'   	           => 0,
+#		'Test::Pod'	               => 1.45, # Make it optional. See t/pod.t
+		'warnings'                 => 0,
 	},
 	VERSION_FROM	=> 'lib/DBIx/Admin/TableInfo.pm',
 );

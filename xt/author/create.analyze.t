@@ -11,6 +11,8 @@ use DBIx::Admin::TableInfo;
 
 use Moo;
 
+use Test::More;
+
 has creator =>
 (
 	is       => 'rw',
@@ -30,11 +32,13 @@ has dsn_manager =>
 my($dsn_manager) = DBIx::Admin::DSNManager -> new(file_name => 'xt/author/dsn.ini');
 my($config)      = $dsn_manager -> config;
 my(@table_name)  = (qw/one two/);
+my($test_count)  = 0;
 
 my($active, $attr);
 my($creator);
-my($dbh);
+my($dsn, $dbh);
 my($primary_key);
+my($schema);
 my($table_name, $table_manager, $table_info);
 my($use_for_testing);
 
@@ -48,25 +52,34 @@ for my $db (keys %$config)
 
 	next if (! $use_for_testing);
 
-	print "# Testing with $db\n";
+	diag "Testing with $db\n";
 
+	$dsn     = $$config{$db}{dsn};
 	$attr    = $$config{$db}{attributes};
-	$dbh     = DBI -> connect($$config{$db}{dsn}, $$config{$db}{username}, $$config{$db}{password}, $attr);
+	$dbh     = DBI -> connect($dsn, $$config{$db}{username}, $$config{$db}{password}, $attr);
 	$creator = DBIx::Admin::CreateTable -> new(dbh => $dbh);
+
+	# Drop tables if they exist.
 
 	for $table_name (reverse @table_name)
 	{
-		print "# Dropping table '$table_name'. It may not exist\n";
+		diag "Dropping table '$table_name'. It may not exist\n";
 
 		$creator -> drop_table($table_name);
+
+		ok(1, 'Deleted table which may not exist');
+
+		$test_count++;
 	}
+
+	# Create tables.
 
 	for $table_name (@table_name)
 	{
 		$primary_key = $creator -> generate_primary_key_sql($table_name);
 
-		print "# Creating table '$table_name'. It will not exist yet\n";
-		print "# Primary key attributes: $primary_key\n";
+		diag " Creating table '$table_name'. It will not exist yet\n";
+		diag " Primary key attributes: $primary_key\n";
 
 		if ($table_name eq 'one')
 		{
@@ -89,21 +102,46 @@ create table $table_name
 )
 SQL
 		}
-
-		$table_manager = DBIx::Admin::TableInfo -> new(dbh => $dbh);
-		$table_info    = $table_manager -> info;
-
-		print Dumper($$table_info{$table_name});
 	}
+
+	# Process tables.
+
+	$schema = $dsn =~ /^dbi:Oracle/i
+				? uc $ENV{DBI_USER}
+				: $dsn =~ /^dbi:Pg/i
+				? 'public'
+				: undef; # MySQL, SQLite.
+	$table_manager = DBIx::Admin::TableInfo -> new(dbh => $dbh, schema => $schema);
+	$table_info    = $table_manager -> info;
+
+	for $table_name (@table_name)
+	{
+		diag '-' x 50;
+		diag "Dumping table info for table '$table_name'";
+		diag Dumper($$table_info{$table_name});
+		diag "Dumped table info for table '$table_name'";
+	}
+
+	diag '-' x 50;
+	diag Dumper($table_info);
+	diag '-' x 50;
+
+	# Drop tables to clean up.
 
 	for $table_name (reverse @table_name)
 	{
-		print "# Dropping table '$table_name'. It must exist now\n";
+		diag "# Dropping table '$table_name'. It must exist now\n";
 
 		$creator -> drop_table($table_name);
+
+		ok(1, 'Deleted table which must exist');
+
+		$test_count++;
 	}
 
 	$dbh -> disconnect;
 
-	print "#\n";
+	diag;
 }
+
+done_testing($test_count);

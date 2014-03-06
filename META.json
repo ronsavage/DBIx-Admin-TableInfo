@@ -4,7 +4,7 @@
       "Ron Savage <ron@savage.net.au>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.4003, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Module::Build version 0.4204",
    "license" : [
       "artistic_2"
    ],
@@ -27,8 +27,8 @@
       "runtime" : {
          "requires" : {
             "DBI" : "0",
-            "Data::Dumper::Concise" : "2.02",
-            "Hash::FieldHash" : "0.12",
+            "Data::Dumper::Concise" : "2.021",
+            "Moo" : "1.004002",
             "strict" : "0",
             "warnings" : "0"
          }
@@ -37,7 +37,7 @@
    "provides" : {
       "DBIx::Admin::TableInfo" : {
          "file" : "lib/DBIx/Admin/TableInfo.pm",
-         "version" : "2.09"
+         "version" : "2.10"
       }
    },
    "release_status" : "stable",
@@ -46,5 +46,5 @@
          "http://www.perlfoundation.org/artistic_license_2_0"
       ]
    },
-   "version" : "2.09"
+   "version" : "2.10"
 }

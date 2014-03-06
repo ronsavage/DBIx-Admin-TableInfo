@@ -3,7 +3,26 @@ use warnings;
 
 use Module::Build;
 
-Module::Build -> new
+my $class = Module::Build->subclass(code => <<'EOF');
+
+sub ACTION_authortest
+{
+	my($self) = @_;
+
+	$self->depends_on('build');
+	$self->depends_on('manifest');
+	$self->depends_on('distmeta');
+
+	$self->test_files( qw< t xt/author > );
+	$self->recursive_test_files(1);
+
+	$self->depends_on('test');
+
+	return;
+}
+EOF
+
+$class -> new
 (
 	module_name    => 'DBIx::Admin::TableInfo',
 	license        => 'artistic_2',
@@ -20,11 +39,11 @@ Module::Build -> new
 	},
 	requires =>
 	{
-		'Data::Dumper::Concise'    => 2.021,
-		'DBI'                      => 0,
-		'Moo'                      => 1.004002,
-		'strict'                   => 0,
-		'warnings'                 => 0,
+		'Data::Dumper::Concise' => 2.021,
+		'DBI'                   => 0,
+		'Moo'                   => 1.004002,
+		'strict'                => 0,
+		'warnings'              => 0,
 	},
 	author_test_requires =>
 	{
