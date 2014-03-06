@@ -3,6 +3,8 @@ package DBIx::Admin::TableInfo;
 use strict;
 use warnings;
 
+use Data::Dumper::Concise; # Form Dumper().
+
 use Moo;
 
 has catalog =>
@@ -49,6 +51,16 @@ has type =>
 );
 
 our $VERSION = '2.10';
+
+# -----------------------------------------------
+
+sub BUILD
+{
+	my($self) = @_;
+
+	$self -> _info;
+
+} # End of BUILD.
 
 # -----------------------------------------------
 
@@ -182,9 +194,17 @@ sub _info
 			{
 				$table_sth = $self -> dbh -> foreign_key_info($self -> catalog, $self -> schema, $table_name, $self -> catalog, $self -> schema, $foreign_table) || next;
 
-				for $column_data (@{$table_sth -> fetchall_arrayref({})})
+				if ($vendor eq 'MYSQL')
 				{
-					$$info{$table_name}{foreign_keys}{$foreign_table} = {%$column_data};
+					my($hashref) = $table_sth->fetchall_hashref(['PKTABLE_NAME']);
+					$$info{$table_name}{foreign_keys}{$foreign_table} = $$hashref{$table_name} if ($$hashref{$table_name});
+				}
+				else
+				{
+					for $column_data (@{$table_sth -> fetchall_arrayref({})})
+					{
+						$$info{$table_name}{foreign_keys}{$foreign_table} = {%$column_data};
+					}
 				}
 			}
 		}
@@ -251,6 +271,8 @@ This program is shipped as examples/table.info.pl.
 		? uc $ENV{DBI_USER}
 		: $ENV{DBI_DSN} =~ /^dbi:Pg/i
 		? 'public'
+		: $ENV{DBI_DSN} =~ /^dbi:SQLite/i
+		? 'main'
 		: undef;
 
 	print Data::Dumper -> Dump
@@ -427,6 +449,8 @@ The default value is undef.
 Note: If you are using Oracle, call C<new()> with schema set to uc $user_name.
 
 Note: If you are using Postgres, call C<new()> with schema set to 'public'.
+
+Note: If you are using SQLite, call C<new()> with schema set to 'main'.
 
 This parameter is optional.
 
@@ -637,9 +661,13 @@ Here are tested parameter values for various database vendors:
 
 =item o SQLite
 
-	my($admin) = DBIx::Admin::TableInfo -> new(dbh => $dbh);
+	my($admin) = DBIx::Admin::TableInfo -> new
+	(
+		dbh    => $dbh,
+		schema => 'main',
+	);
 
-	In other words, the default values for catalog, schema, table and type will Just Work.
+	In other words, the default values for catalog, table and type will Just Work.
 
 	See the FAQ for which tables are ignored under SQLite.
 

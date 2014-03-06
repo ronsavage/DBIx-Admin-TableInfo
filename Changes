@@ -5,6 +5,9 @@ Revision history for Perl extension DBIx::Admin::TableInfo.
 	- Move t/pod.t to xt/author/.
 	- Rename t/test.t to t/load.t.
 	- Switch from Hash::FieldHash to Moo. But not Moops - I don't need that level of complexity.
+	- Fix retrieval of foreign keys under MySQL. In this case, the 'foreign_keys' key in the hashref
+		returned by info() now points to a hashref whose keys are tables pointing to the given table.
+		This is the same as for Postgres, etc. See the docs for details.
 	- Add xt/author/create.analyze.t to explicitly add a table to the 'testdb' and report on it.
 		It uses xt/author/dsn.ini to test MySQL, Pg and SQLite.
 

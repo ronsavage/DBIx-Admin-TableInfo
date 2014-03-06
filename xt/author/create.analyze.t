@@ -41,6 +41,7 @@ my($primary_key);
 my($schema);
 my($table_name, $table_manager, $table_info);
 my($use_for_testing);
+my($vendor);
 
 for my $db (keys %$config)
 {
@@ -57,6 +58,7 @@ for my $db (keys %$config)
 	$dsn     = $$config{$db}{dsn};
 	$attr    = $$config{$db}{attributes};
 	$dbh     = DBI -> connect($dsn, $$config{$db}{username}, $$config{$db}{password}, $attr);
+	$vendor  = $dbh -> get_info(17); # SQL_DBMS_NAME.
 	$creator = DBIx::Admin::CreateTable -> new(dbh => $dbh);
 
 	# Drop tables if they exist.
@@ -91,13 +93,25 @@ create table $table_name
 )
 SQL
 		}
+		elsif ($vendor eq 'MYSQL')
+		{
+			$creator -> create_table(<<SQL);
+create table $table_name
+(
+	id     $primary_key,
+	one_id integer not null,
+	foreign key(one_id) references one(id),
+	data   varchar(255)
+)
+SQL
+		}
 		else
 		{
 			$creator -> create_table(<<SQL);
 create table $table_name
 (
 	id     $primary_key,
-	one_id integer not null references one(id),
+	one_id integer not null greferences one(id),
 	data   varchar(255)
 )
 SQL
@@ -110,7 +124,9 @@ SQL
 				? uc $ENV{DBI_USER}
 				: $dsn =~ /^dbi:Pg/i
 				? 'public'
-				: undef; # MySQL, SQLite.
+				: $dsn =~ /dbi:SQLite/i
+				? 'main'
+				: undef;
 	$table_manager = DBIx::Admin::TableInfo -> new(dbh => $dbh, schema => $schema);
 	$table_info    = $table_manager -> info;
 
@@ -123,8 +139,6 @@ SQL
 	}
 
 	diag '-' x 50;
-	diag Dumper($table_info);
-	diag '-' x 50;
 
 	# Drop tables to clean up.
 
@@ -132,7 +146,7 @@ SQL
 	{
 		diag "# Dropping table '$table_name'. It must exist now\n";
 
-		$creator -> drop_table($table_name);
+		#$creator -> drop_table($table_name);
 
 		ok(1, 'Deleted table which must exist');
 

@@ -14,3 +14,4 @@ t/load.t
 xt/author/create.analyze.t
 xt/author/dsn.ini
 xt/author/pod.t
+xt/author/stackoverflow.pl
