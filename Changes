@@ -1,5 +1,13 @@
 Revision history for Perl extension DBIx::Admin::TableInfo.
 
+2.10  Thu Mar  6 09:45:07 2014
+	- Rename CHANGES to Changes as per CPAN::Spec::Changes.
+	- Move t/pod.t to xt/author/.
+	- Rename t/test.t to t/load.t.
+	- Switch from Hash::FieldHash to Moo. But not Moops - I don't need that level of complexity.
+	- Add xt/author/create.analyze.t to explicitly add a table to the 'testdb' and report on it.
+		It uses xt/author/dsn.ini to test MySQL, Pg and SQLite.
+
 2.09  Thu Mar 21 13:16:00 2013
 	- Add $ENV{DBI_SCHEMA} to examples/table.info.pl.
 	- For the MusicBrainz database, use DBI_SCHEMA=musicbrainz,cover_art_archive,report,statistics.

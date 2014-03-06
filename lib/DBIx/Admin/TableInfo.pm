@@ -2,18 +2,53 @@ package DBIx::Admin::TableInfo;
 
 use strict;
 use warnings;
-no warnings 'redefine';
 
-use Hash::FieldHash ':all';
+use Moo;
 
-fieldhash my %catalog => 'catalog';
-fieldhash my %dbh     => 'dbh';
-fieldhash my %info    => 'info';
-fieldhash my %schema  => 'schema';
-fieldhash my %table   => 'table';
-fieldhash my %type    => 'type';
+has catalog =>
+(
+	is       => 'rw',
+	default  => sub{return undef},
+	required => 0,
+);
 
-our $VERSION = '2.09';
+has dbh =>
+(
+	is       => 'rw',
+	isa      => sub{die "The 'dbh' parameter to new() is mandatory\n" if (! $_[0])},
+	default  => sub{return ''},
+	required => 0,
+);
+
+has info =>
+(
+	is       => 'rw',
+	default  => sub{return {} },
+	required => 0,
+);
+
+has schema =>
+(
+	is       => 'rw',
+	default  => sub{return undef},
+	required => 0,
+);
+
+has table =>
+(
+	is       => 'rw',
+	default  => sub{return '%'},
+	required => 0,
+);
+
+has type =>
+(
+	is       => 'rw',
+	default  => sub{return 'TABLE'},
+	required => 0,
+);
+
+our $VERSION = '2.10';
 
 # -----------------------------------------------
 
@@ -158,39 +193,6 @@ sub _info
 	$self -> info($info);
 
 }	# End of _info.
-
-# -----------------------------------------------
-
-sub _init
-{
-	my($self, $arg) = @_;
-	$$arg{catalog}  ||= undef;   # Caller can set.
-	$$arg{dbh}      ||= '';      # Caller can set.
-	$$arg{info}     = {};
-	$$arg{schema}   ||= undef;   # Caller can set.
-	$$arg{table}    ||= '%';     # Caller can set.
-	$$arg{type}     ||= 'TABLE'; # Caller can set.
-	$self           = from_hash($self, $arg);
-
-	die "The 'dbh' parameter to new() is mandatory\n" if (! $self -> dbh);
-
-	return $self;
-
-} # End of _init.
-
-# -----------------------------------------------
-
-sub new
-{
-	my($class, %arg) = @_;
-	my($self)        = bless {}, $class;
-	$self            = $self -> _init(\%arg);
-
-	$self -> _info;
-
-	return $self;
-
-}	# End of new.
 
 # -----------------------------------------------
 
