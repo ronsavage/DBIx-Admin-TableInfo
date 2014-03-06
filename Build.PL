@@ -1,3 +1,6 @@
+use strict;
+use warnings;
+
 use Module::Build;
 
 Module::Build -> new
@@ -8,19 +11,24 @@ Module::Build -> new
 	dist_author    => 'Ron Savage <ron@savage.net.au>',
 	build_requires =>
 	{
-		Test::More=> 0,
-#		Test::Pod  => 1.45, # Make it optional. See t/pod.t
+		'Test::More' => 0,
+#		'Test::Pod'  => 1.45, # Make it optional. See t/pod.t
 	},
 	configure_requires =>
 	{
-		Module::Build => 0.3800,
+		'Module::Build' => 0.3800,
 	},
 	requires =>
 	{
-		Data::Dumper::Concise => 2.020,
-		DBI                   => 0,
-		Hash::FieldHash       => 0.12,
-		strict                => 0,
-		warnings              => 0,
+		'Data::Dumper::Concise'    => 2.021,
+		'DBI'                      => 0,
+		'Moo'                      => 1.004002,
+		'strict'                   => 0,
+		'warnings'                 => 0,
 	},
+	author_test_requires =>
+	{
+		'DBIx::Admin::CreateTable' => 2.09,
+		'DBIx::Admin::DSNManager'  => 2.00,
+	}
 ) -> create_build_script();

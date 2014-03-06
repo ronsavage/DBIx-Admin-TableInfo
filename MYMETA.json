@@ -27,8 +27,8 @@
       "runtime" : {
          "requires" : {
             "DBI" : "0",
-            "Data::Dumper::Concise" : "2.02",
-            "Hash::FieldHash" : "0.12",
+            "Data::Dumper::Concise" : "2.021",
+            "Moo" : "1.004002",
             "strict" : "0",
             "warnings" : "0"
          }

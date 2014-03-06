@@ -1,6 +1,6 @@
 Build.PL
 Changelog.ini
-CHANGES
+Changes
 docs/contacts.pg.log
 docs/contacts.sqlite.log
 examples/table.info.pl
@@ -10,5 +10,7 @@ MANIFEST			This list of files
 META.json
 META.yml
 README
-t/pod.t
-t/test.t
+t/load.t
+xt/author/create.analyze.t
+xt/author/dsn.ini
+xt/author/pod.t
