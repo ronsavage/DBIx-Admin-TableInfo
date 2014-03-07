@@ -104,20 +104,12 @@ SQL
 create table $table_name
 (
 	id      $primary_key,
-	one_id integer not null references one(id),
-	data    varchar(255)
+	one_id  integer not null,
+	data    varchar(255),
+	foreign key(one_id) references one(id)
 ) $engine
 SQL
 		}
-
-#	one_id integer not null references one(id),
-#create table $table_name
-#(
-#	id      $primary_key,
-#	one_id  integer not null,
-#	foreign key(one_id) references one(id),
-#	data    varchar(255)
-#) $engine
 
 		diag "SQL: $sql\n";
 
@@ -126,13 +118,7 @@ SQL
 
 	# Process tables.
 
-	$schema = $dsn =~ /^dbi:Oracle/i
-				? uc $ENV{DBI_USER}
-				: $dsn =~ /^dbi:Pg/i
-				? 'public'
-				: $dsn =~ /dbi:SQLite/i
-				? 'main'
-				: undef;
+	$schema        = DBIx::Admin::TableInfo::dsn2schema($dsn);
 	$table_manager = DBIx::Admin::TableInfo -> new(dbh => $dbh, schema => $schema);
 	$table_info    = $table_manager -> info;
 

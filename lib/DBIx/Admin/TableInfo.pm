@@ -81,6 +81,21 @@ sub columns
 }	# End of columns.
 
 # -----------------------------------------------
+# Warning: This is a function, not a method.
+
+sub dsn2schema
+{
+	my($dsn, $user) = @_;
+	$user ||= $ENV{DBI_USER};
+
+	return    $dsn =~ /^dbi:Pg/i		? 'public'
+			: $dsn =~ /^dbi:SQLite/i	? 'main'
+			: $dsn =~ /^dbi:Oracle/i	? uc $user
+			: undef;
+
+} # End of dsn2schema.
+
+# -----------------------------------------------
 
 sub _info
 {
@@ -257,7 +272,7 @@ This program is shipped as examples/table.info.pl.
 
 	use Data::Dumper::Concise;
 	use DBI;
-	use DBIx::Admin::TableInfo 2.08;
+	use DBIx::Admin::TableInfo 2.10;
 
 	# ---------------------
 
