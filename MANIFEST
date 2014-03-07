@@ -11,6 +11,7 @@ META.json
 META.yml
 README
 t/load.t
-xt/author/create.analyze.t
 xt/author/dsn.ini
+xt/author/fk.t
+xt/author/mysql.fk.pl
 xt/author/pod.t

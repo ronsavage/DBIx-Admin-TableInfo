@@ -194,7 +194,7 @@ sub _info
 			{
 				$table_sth = $self -> dbh -> foreign_key_info($self -> catalog, $self -> schema, $table_name, $self -> catalog, $self -> schema, $foreign_table) || next;
 
-				if ($vendor eq 'MYSQL')
+				if ($vendor eq 'MySQL')
 				{
 					my($hashref) = $table_sth->fetchall_hashref(['PKTABLE_NAME']);
 					$$info{$table_name}{foreign_keys}{$foreign_table} = $$hashref{$table_name} if ($$hashref{$table_name});

@@ -53,13 +53,13 @@ for my $db (keys %$config)
 
 	next if (! $use_for_testing);
 
-	diag "Testing with $db\n";
-
 	$dsn     = $$config{$db}{dsn};
 	$attr    = $$config{$db}{attributes};
 	$dbh     = DBI -> connect($dsn, $$config{$db}{username}, $$config{$db}{password}, $attr);
-	$vendor  = $dbh -> get_info(17); # SQL_DBMS_NAME.
+	$vendor  = uc $dbh -> get_info(17); # SQL_DBMS_NAME.
 	$creator = DBIx::Admin::CreateTable -> new(dbh => $dbh);
+
+	diag "Started testing DSN section: $db. Vendor: $vendor. \n";
 
 	# Drop tables if they exist.
 
@@ -130,6 +130,8 @@ SQL
 	$table_manager = DBIx::Admin::TableInfo -> new(dbh => $dbh, schema => $schema);
 	$table_info    = $table_manager -> info;
 
+#=pod
+
 	for $table_name (@table_name)
 	{
 		diag '-' x 50;
@@ -139,6 +141,8 @@ SQL
 	}
 
 	diag '-' x 50;
+
+#=cut
 
 	# Drop tables to clean up.
 
@@ -155,7 +159,7 @@ SQL
 
 	$dbh -> disconnect;
 
-	diag;
+	diag "Finished testing DSN section: $db. Vendor: $vendor. \n";
 }
 
 done_testing($test_count);
