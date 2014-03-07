@@ -38,11 +38,12 @@ my($active, $attr);
 my($creator);
 my($dsn, $dbh);
 my($engine);
+my($message);
 my($primary_key);
-my($schema);
+my($sql, $schema);
 my($table_name, $table_manager, $table_info);
 my($use_for_testing);
-my($vendor);
+my($vendor, $version);
 
 for my $db (keys %$config)
 {
@@ -58,10 +59,12 @@ for my $db (keys %$config)
 	$attr    = $$config{$db}{attributes};
 	$dbh     = DBI -> connect($dsn, $$config{$db}{username}, $$config{$db}{password}, $attr);
 	$vendor  = uc $dbh -> get_info(17); # SQL_DBMS_NAME.
-	$creator = DBIx::Admin::CreateTable -> new(dbh => $dbh);
+	$version = $dbh -> get_info(18); # SQL_DBMS_VER.
 	$engine  = $vendor eq 'MYSQL' ? 'engine=innodb' : '';
+	$creator = DBIx::Admin::CreateTable -> new(dbh => $dbh);
+	$message = "DSN section: $db. Vendor: $vendor V $version. \n";
 
-	diag "Started testing DSN section: $db. Vendor: $vendor. \n";
+	diag "Started testing $message";
 
 	# Drop tables if they exist.
 
@@ -82,12 +85,12 @@ for my $db (keys %$config)
 	{
 		$primary_key = $creator -> generate_primary_key_sql($table_name);
 
-		diag " Creating table '$table_name'. It will not exist yet\n";
-		diag " Primary key attributes: $primary_key\n";
+		diag "Creating table '$table_name'. It will not exist yet\n";
+		diag "Primary key attributes: $primary_key\n";
 
 		if ($table_name eq 'one')
 		{
-			$creator -> create_table(<<SQL);
+			$sql = <<SQL;
 create table $table_name
 (
 	id   $primary_key,
@@ -95,29 +98,30 @@ create table $table_name
 ) $engine
 SQL
 		}
-		elsif ($vendor eq 'MYSQL')
-		{
-			$creator -> create_table(<<SQL);
-create table $table_name
-(
-	id     $primary_key,
-	one_id integer not null,
-	foreign key(one_id) references one(id),
-	data   varchar(255)
-) $engine
-SQL
-		}
 		else
 		{
-			$creator -> create_table(<<SQL);
+			$sql = <<SQL;
 create table $table_name
 (
-	id     $primary_key,
+	id      $primary_key,
 	one_id integer not null references one(id),
-	data   varchar(255)
+	data    varchar(255)
 ) $engine
 SQL
 		}
+
+#	one_id integer not null references one(id),
+#create table $table_name
+#(
+#	id      $primary_key,
+#	one_id  integer not null,
+#	foreign key(one_id) references one(id),
+#	data    varchar(255)
+#) $engine
+
+		diag "SQL: $sql\n";
+
+		$creator -> create_table($sql);
 	}
 
 	# Process tables.
@@ -152,7 +156,7 @@ SQL
 	{
 		diag "# Dropping table '$table_name'. It must exist now\n";
 
-		#$creator -> drop_table($table_name);
+		$creator -> drop_table($table_name);
 
 		ok(1, 'Deleted table which must exist');
 
@@ -161,7 +165,7 @@ SQL
 
 	$dbh -> disconnect;
 
-	diag "Finished testing DSN section: $db. Vendor: $vendor. \n";
+	diag "Finished testing $message";
 }
 
 done_testing($test_count);

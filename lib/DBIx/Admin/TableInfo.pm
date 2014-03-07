@@ -675,85 +675,38 @@ Here are tested parameter values for various database vendors:
 
 See the examples/ directory in the distro.
 
-=head1 Tested Database Formats
-
-The first set of tests was done with C<DBIx::Admin::TableInfo> up to V 2.03,
-using examples/table.info.pl (as per the Synopsis):
-
-=over 4
-
-=item o MS Access V 2
-
-Yes, some businesses were still running V 2 as of July, 2004.
-
-=item o MS Access V 2002 and V 2003
-
-=item o MySQL V 4 and V 5
-
-=item o Oracle V 9.2.0
-
-=item o PostgreSQL V 7.3, 8.1
-
-=back
-
-The second set of tests was done with C<DBIx::Admin::TableInfo> V 2.04, also using
-examples/table.info.pl.
-
-=over 4
-
-=item o MySql V 5.0.51a and DBD::mysql V 4.014
-
-=item o Postgres V 08.03.1100 and DBD::Pg V 2.17.1.
-
-=item o SQLite V 3.6.22 and DBD::SQLite V 1.29.
-
-=back
-
 =head1 FAQ
+
+=head2 Which versions of the servers did you test?
+
+	Versions as at 2014-03-07
+	+----------|------------+
+	|  Vendor  |     V      |
+	+----------|------------+
+	|  MariaDB |   5.5.36   |
+	+----------|------------+
+	|  Oracle  | 10.2.0.1.0 | (Not tested for years)
+	+----------|------------+
+	| Postgres |   9.1.12   |
+	+----------|------------+
+	|  SQLite  |   3.7.17   |
+	+----------|------------+
 
 =head2 How do I identify foreign keys?
 
-The following output from xt/author/fk.t shows some detail of the hashref returned by the call to info().
+See L<DBIx::Admin::CreateTable/FAQ> for database server-specific create statements to activate foreign keys.
 
-References for 'Create table':
-L<MySQL|https://dev.mysql.com/doc/refman/5.7/en/create-table.html>.
-L<Postgres|http://www.postgresql.org/docs/9.3/interactive/sql-createtable.html>.
-L<SQLite|https://sqlite.org/lang_createtable.html>.
+Then try:
 
-Given these create statements:
+	my($info) = DBIx::Admin::TableInfo -> new(dbh => $dbh) -> info;
 
-	create table one
-	(
-		id integer primary key autoincrement,
-		data varchar(255)
-	)
+	print Data::Dumper::Concise::Dumper($$info{one}), "\n";
 
-And (for MySQL only):
+Output:
 
-	create table two
-	(
-		id     integer primary key autoincrement,
-		one_id integer not null,
-		foreign key(one_id) references one(id),
-		data   varchar(255)
-	)
+=over 4
 
-Or (for Postgres and SQLite):
-
-	create table two
-	(
-		id     integer primary key default nextval('one_id_seq'),
-		one_id integer not null references one(id),
-		data   varchar(255)
-	)
-
-And:
-
-	my($info) = DBIx::Admin::TableInfo -> new(...) -> info;
-
-	print Data::Dumper::Concise::Dumper($$info{one});
-
-=head3 MySQL
+=item o MySQL
 
 	foreign_keys => {
 		two => {
@@ -775,7 +728,7 @@ And:
 		}
 	},
 
-=head3 Postgres
+=item o Postgres
 
 	foreign_keys => {
 		two => {
@@ -799,7 +752,7 @@ And:
 		}
 	},
 
-=head3 SQLite
+=item o SQLite
 
 	foreign_keys => {
 		two => {
@@ -822,6 +775,10 @@ And:
 			UPDATE_RULE => 3
 		}
 	},
+
+=back
+
+You can also play with xt/author/fk.t and xt/author/dsn.ini (especially the 'active' option).
 
 =head2 Which tables are ignored for which databases?
 
