@@ -37,6 +37,7 @@ my($test_count)  = 0;
 my($active, $attr);
 my($creator);
 my($dsn, $dbh);
+my($engine);
 my($primary_key);
 my($schema);
 my($table_name, $table_manager, $table_info);
@@ -58,6 +59,7 @@ for my $db (keys %$config)
 	$dbh     = DBI -> connect($dsn, $$config{$db}{username}, $$config{$db}{password}, $attr);
 	$vendor  = uc $dbh -> get_info(17); # SQL_DBMS_NAME.
 	$creator = DBIx::Admin::CreateTable -> new(dbh => $dbh);
+	$engine  = $vendor eq 'MYSQL' ? 'engine=innodb' : '';
 
 	diag "Started testing DSN section: $db. Vendor: $vendor. \n";
 
@@ -90,7 +92,7 @@ create table $table_name
 (
 	id   $primary_key,
 	data varchar(255)
-)
+) $engine
 SQL
 		}
 		elsif ($vendor eq 'MYSQL')
@@ -102,7 +104,7 @@ create table $table_name
 	one_id integer not null,
 	foreign key(one_id) references one(id),
 	data   varchar(255)
-)
+) $engine
 SQL
 		}
 		else
@@ -113,7 +115,7 @@ create table $table_name
 	id     $primary_key,
 	one_id integer not null references one(id),
 	data   varchar(255)
-)
+) $engine
 SQL
 		}
 	}

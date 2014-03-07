@@ -711,57 +711,117 @@ examples/table.info.pl.
 
 =head1 FAQ
 
-=head2 How do I identify foreign key?
+=head2 How do I identify foreign keys?
+
+The following output from xt/author/fk.t shows some detail of the hashref returned by the call to info().
+
+References for 'Create table':
+L<MySQL|https://dev.mysql.com/doc/refman/5.7/en/create-table.html>.
+L<Postgres|http://www.postgresql.org/docs/9.3/interactive/sql-createtable.html>.
+L<SQLite|https://sqlite.org/lang_createtable.html>.
+
+Given these create statements:
+
+	create table one
+	(
+		id integer primary key autoincrement,
+		data varchar(255)
+	)
+
+And (for MySQL only):
+
+	create table two
+	(
+		id     integer primary key autoincrement,
+		one_id integer not null,
+		foreign key(one_id) references one(id),
+		data   varchar(255)
+	)
+
+Or (for Postgres and SQLite):
+
+	create table two
+	(
+		id     integer primary key default nextval('one_id_seq'),
+		one_id integer not null references one(id),
+		data   varchar(255)
+	)
+
+And:
+
+	my($info) = DBIx::Admin::TableInfo -> new(...) -> info;
+
+	print Data::Dumper::Concise::Dumper($$info{one});
 
 =head3 MySQL
 
+	foreign_keys => {
+		two => {
+			DEFERABILITY => undef,
+			DELETE_RULE => undef,
+			FKCOLUMN_NAME => "one_id",
+			FKTABLE_CAT => "def",
+			FKTABLE_NAME => "two",
+			FKTABLE_SCHEM => "testdb",
+			FK_NAME => "two_ibfk_1",
+			KEY_SEQ => 1,
+			PKCOLUMN_NAME => "id",
+			PKTABLE_CAT => undef,
+			PKTABLE_NAME => "one",
+			PKTABLE_SCHEM => "testdb",
+			PK_NAME => undef,
+			UNIQUE_OR_PRIMARY => undef,
+			UPDATE_RULE => undef
+		}
+	},
+
 =head3 Postgres
 
-#   foreign_keys => {
-#     two => {
-#       DEFERABILITY => 7,
-#       DELETE_RULE => 3,
-#       FK_COLUMN_NAME => "one_id",
-#       FK_DATA_TYPE => "int4",
-#       FK_NAME => "two_one_id_fkey",
-#       FK_TABLE_CAT => undef,
-#       FK_TABLE_NAME => "two",
-#       FK_TABLE_SCHEM => "public",
-#       ORDINAL_POSITION => 1,
-#       UK_COLUMN_NAME => "id",
-#       UK_DATA_TYPE => "int4",
-#       UK_NAME => "one_pkey",
-#       UK_TABLE_CAT => undef,
-#       UK_TABLE_NAME => "one",
-#       UK_TABLE_SCHEM => "public",
-#       UNIQUE_OR_PRIMARY => "PRIMARY",
-#       UPDATE_RULE => 3
-#     }
-#   },
+	foreign_keys => {
+		two => {
+			DEFERABILITY => 7,
+			DELETE_RULE => 3,
+			FK_COLUMN_NAME => "one_id",
+			FK_DATA_TYPE => "int4",
+			FK_NAME => "two_one_id_fkey",
+			FK_TABLE_CAT => undef,
+			FK_TABLE_NAME => "two",
+			FK_TABLE_SCHEM => "public",
+			ORDINAL_POSITION => 1,
+			UK_COLUMN_NAME => "id",
+			UK_DATA_TYPE => "int4",
+			UK_NAME => "one_pkey",
+			UK_TABLE_CAT => undef,
+			UK_TABLE_NAME => "one",
+			UK_TABLE_SCHEM => "public",
+			UNIQUE_OR_PRIMARY => "PRIMARY",
+			UPDATE_RULE => 3
+		}
+	},
 
 =head3 SQLite
 
-#   foreign_keys => {
-#     two => {
-#       DEFERABILITY => undef,
-#       DELETE_RULE => 3,
-#       FK_COLUMN_NAME => "one_id",
-#       FK_DATA_TYPE => undef,
-#       FK_NAME => undef,
-#       FK_TABLE_CAT => undef,
-#       FK_TABLE_NAME => "two",
-#       FK_TABLE_SCHEM => undef,
-#       ORDINAL_POSITION => 0,
-#       UK_COLUMN_NAME => "id",
-#       UK_DATA_TYPE => undef,
-#       UK_NAME => undef,
-#       UK_TABLE_CAT => undef,
-#       UK_TABLE_NAME => "one",
-#       UK_TABLE_SCHEM => undef,
-#       UNIQUE_OR_PRIMARY => undef,
-#       UPDATE_RULE => 3
-#     }
-#   },
+	foreign_keys => {
+		two => {
+			DEFERABILITY => undef,
+			DELETE_RULE => 3,
+			FK_COLUMN_NAME => "one_id",
+			FK_DATA_TYPE => undef,
+			FK_NAME => undef,
+			FK_TABLE_CAT => undef,
+			FK_TABLE_NAME => "two",
+			FK_TABLE_SCHEM => undef,
+			ORDINAL_POSITION => 0,
+			UK_COLUMN_NAME => "id",
+			UK_DATA_TYPE => undef,
+			UK_NAME => undef,
+			UK_TABLE_CAT => undef,
+			UK_TABLE_NAME => "one",
+			UK_TABLE_SCHEM => undef,
+			UNIQUE_OR_PRIMARY => undef,
+			UPDATE_RULE => 3
+		}
+	},
 
 =head2 Which tables are ignored for which databases?
 
@@ -910,6 +970,7 @@ Home page: http://savage.net.au/index.html
 =head1 Copyright
 
 Australian copyright (c) 2004, Ron Savage.
+
 	All Programs of mine are 'OSI Certified Open Source Software';
 	you can redistribute them and/or modify them under the terms of
 	The Artistic License, a copy of which is available at:
