@@ -11,6 +11,7 @@ META.yml
 README
 scripts/pod2html.sh
 t/load.t
+t/version.t
 xt/author/dsn.ini
 xt/author/fk.t
 xt/author/mysql.fk.pl
