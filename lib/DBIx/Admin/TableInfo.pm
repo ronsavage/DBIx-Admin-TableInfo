@@ -738,7 +738,10 @@ Then try:
 
 	print Data::Dumper::Concise::Dumper($$info{one}{foreign_keys}), "\n";
 
-Output (each is a hashref with the keys being the names of tables [in this case 'two'] pointing to table 'one'):
+Output follows. Each is a hashref with the keys being the names of tables (in this case 'two') pointing to table 'one'.
+
+But beware slightly differing spellings depending on the database server. This is documented in
+L<https://metacpan.org/pod/DBI#foreign_key_info>. Look closely at the usage of the '_' character.
 
 =over 4
 
