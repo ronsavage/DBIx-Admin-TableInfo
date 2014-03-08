@@ -19,7 +19,7 @@ has dbh =>
 	is       => 'rw',
 	isa      => sub{die "The 'dbh' parameter to new() is mandatory\n" if (! $_[0])},
 	default  => sub{return ''},
-	required => 0,
+	required => 1,
 );
 
 has info =>
@@ -32,7 +32,7 @@ has info =>
 has schema =>
 (
 	is       => 'rw',
-	default  => sub{return undef},
+	default  => sub{return undef}, # See BUILD().
 	required => 0,
 );
 
@@ -58,6 +58,7 @@ sub BUILD
 {
 	my($self) = @_;
 
+	$self -> schema(dbh2schema($self -> dbh) );
 	$self -> _info;
 
 } # End of BUILD.
@@ -83,17 +84,20 @@ sub columns
 # -----------------------------------------------
 # Warning: This is a function, not a method.
 
-sub dsn2schema
+sub dbh2schema
 {
-	my($dsn, $user) = @_;
-	$user ||= $ENV{DBI_USER};
+	my($dbh)    = @_;
+	my($vendor) = uc $dbh -> get_info(17);
+	my(%schema) =
+	(
+		ORACLE     => uc $$dbh{Username},
+		POSTGRESQL => 'public',
+		SQLITE     => 'main',
+	);
 
-	return    $dsn =~ /^dbi:Pg/i		? 'public'
-			: $dsn =~ /^dbi:SQLite/i	? 'main'
-			: $dsn =~ /^dbi:Oracle/i	? uc $user
-			: undef;
+	return $schema{$vendor};
 
-} # End of dsn2schema.
+} # End of dbh2schema.
 
 # -----------------------------------------------
 
@@ -707,6 +711,14 @@ See the examples/ directory in the distro.
 	|  SQLite  |   3.7.17   |
 	+----------|------------+
 
+=head2 Which tables are ignored for which databases?
+
+Here is the code which skips some tables:
+
+	next if ( ($vendor eq 'ORACLE')     && ($table_name =~ /^BIN\$.+\$./) );
+	next if ( ($vendor eq 'POSTGRESQL') && ($table_name =~ /^(?:pg_|sql_)/) );
+	next if ( ($vendor eq 'SQLITE')     && ($table_name eq 'sqlite_sequence') );
+
 =head2 How do I identify foreign keys?
 
 See L<DBIx::Admin::CreateTable/FAQ> for database server-specific create statements to activate foreign keys.
@@ -715,93 +727,79 @@ Then try:
 
 	my($info) = DBIx::Admin::TableInfo -> new(dbh => $dbh) -> info;
 
-	print Data::Dumper::Concise::Dumper($$info{one}), "\n";
+	print Data::Dumper::Concise::Dumper($$info{one}{foreign_keys}), "\n";
 
-Output:
+Output (each is a hashref with the keys being the names of tables [in this case 'two'] pointing to table 'one'):
 
 =over 4
 
 =item o MySQL
 
-	foreign_keys => {
-		two => {
-			DEFERABILITY => undef,
-			DELETE_RULE => undef,
-			FKCOLUMN_NAME => "one_id",
-			FKTABLE_CAT => "def",
-			FKTABLE_NAME => "two",
-			FKTABLE_SCHEM => "testdb",
-			FK_NAME => "two_ibfk_1",
-			KEY_SEQ => 1,
-			PKCOLUMN_NAME => "id",
-			PKTABLE_CAT => undef,
-			PKTABLE_NAME => "one",
-			PKTABLE_SCHEM => "testdb",
-			PK_NAME => undef,
-			UNIQUE_OR_PRIMARY => undef,
-			UPDATE_RULE => undef
-		}
-	},
+	two => {
+		DEFERABILITY => undef,
+		DELETE_RULE => undef,
+		FKCOLUMN_NAME => "one_id",
+		FKTABLE_CAT => "def",
+		FKTABLE_NAME => "two",
+		FKTABLE_SCHEM => "testdb",
+		FK_NAME => "two_ibfk_1",
+		KEY_SEQ => 1,
+		PKCOLUMN_NAME => "id",
+		PKTABLE_CAT => undef,
+		PKTABLE_NAME => "one",
+		PKTABLE_SCHEM => "testdb",
+		PK_NAME => undef,
+		UNIQUE_OR_PRIMARY => undef,
+		UPDATE_RULE => undef
+	}
 
 =item o Postgres
 
-	foreign_keys => {
-		two => {
-			DEFERABILITY => 7,
-			DELETE_RULE => 3,
-			FK_COLUMN_NAME => "one_id",
-			FK_DATA_TYPE => "int4",
-			FK_NAME => "two_one_id_fkey",
-			FK_TABLE_CAT => undef,
-			FK_TABLE_NAME => "two",
-			FK_TABLE_SCHEM => "public",
-			ORDINAL_POSITION => 1,
-			UK_COLUMN_NAME => "id",
-			UK_DATA_TYPE => "int4",
-			UK_NAME => "one_pkey",
-			UK_TABLE_CAT => undef,
-			UK_TABLE_NAME => "one",
-			UK_TABLE_SCHEM => "public",
-			UNIQUE_OR_PRIMARY => "PRIMARY",
-			UPDATE_RULE => 3
-		}
-	},
+	two => {
+		DEFERABILITY => 7,
+		DELETE_RULE => 3,
+		FK_COLUMN_NAME => "one_id",
+		FK_DATA_TYPE => "int4",
+		FK_NAME => "two_one_id_fkey",
+		FK_TABLE_CAT => undef,
+		FK_TABLE_NAME => "two",
+		FK_TABLE_SCHEM => "public",
+		ORDINAL_POSITION => 1,
+		UK_COLUMN_NAME => "id",
+		UK_DATA_TYPE => "int4",
+		UK_NAME => "one_pkey",
+		UK_TABLE_CAT => undef,
+		UK_TABLE_NAME => "one",
+		UK_TABLE_SCHEM => "public",
+		UNIQUE_OR_PRIMARY => "PRIMARY",
+		UPDATE_RULE => 3
+	}
 
 =item o SQLite
 
-	foreign_keys => {
-		two => {
-			DEFERABILITY => undef,
-			DELETE_RULE => 3,
-			FK_COLUMN_NAME => "one_id",
-			FK_DATA_TYPE => undef,
-			FK_NAME => undef,
-			FK_TABLE_CAT => undef,
-			FK_TABLE_NAME => "two",
-			FK_TABLE_SCHEM => undef,
-			ORDINAL_POSITION => 0,
-			UK_COLUMN_NAME => "id",
-			UK_DATA_TYPE => undef,
-			UK_NAME => undef,
-			UK_TABLE_CAT => undef,
-			UK_TABLE_NAME => "one",
-			UK_TABLE_SCHEM => undef,
-			UNIQUE_OR_PRIMARY => undef,
-			UPDATE_RULE => 3
-		}
-	},
+	two => {
+		DEFERABILITY => undef,
+		DELETE_RULE => 3,
+		FK_COLUMN_NAME => "one_id",
+		FK_DATA_TYPE => undef,
+		FK_NAME => undef,
+		FK_TABLE_CAT => undef,
+		FK_TABLE_NAME => "two",
+		FK_TABLE_SCHEM => undef,
+		ORDINAL_POSITION => 0,
+		UK_COLUMN_NAME => "id",
+		UK_DATA_TYPE => undef,
+		UK_NAME => undef,
+		UK_TABLE_CAT => undef,
+		UK_TABLE_NAME => "one",
+		UK_TABLE_SCHEM => undef,
+		UNIQUE_OR_PRIMARY => undef,
+		UPDATE_RULE => 3
+	}
 
 =back
 
 You can also play with xt/author/fk.t and xt/author/dsn.ini (especially the 'active' option).
-
-=head2 Which tables are ignored for which databases?
-
-Here is the code which skips some tables:
-
-	next if ( ($vendor eq 'ORACLE')     && ($table_name =~ /^BIN\$.+\$./) );
-	next if ( ($vendor eq 'POSTGRESQL') && ($table_name =~ /^(?:pg_|sql_)/) );
-	next if ( ($vendor eq 'SQLITE')     && ($table_name eq 'sqlite_sequence') );
 
 =head2 Does DBIx::Admin::TableInfo work with SQLite databases?
 

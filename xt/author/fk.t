@@ -118,7 +118,7 @@ SQL
 
 	# Process tables.
 
-	$schema        = DBIx::Admin::TableInfo::dsn2schema($dsn);
+	$schema        = DBIx::Admin::TableInfo::dbh2schema($dbh);
 	$table_manager = DBIx::Admin::TableInfo -> new(dbh => $dbh, schema => $schema);
 	$table_info    = $table_manager -> info;
 
@@ -128,7 +128,8 @@ SQL
 	{
 		diag '-' x 50;
 		diag "Dumping table info for table '$table_name'";
-		diag Dumper($$table_info{$table_name});
+		#diag Dumper($$table_info{$table_name});
+		diag Dumper($$table_info{one}{foreign_keys});
 		diag "Dumped table info for table '$table_name'";
 	}
 
