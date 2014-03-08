@@ -268,8 +268,6 @@ DBIx::Admin::TableInfo - A wrapper for all of table_info(), column_info(), *_key
 
 =head1 Synopsis
 
-This program is shipped as examples/table.info.pl.
-
 	#!/usr/bin/env perl
 
 	use strict;
@@ -285,15 +283,9 @@ This program is shipped as examples/table.info.pl.
 	$$attr{sqlite_unicode} = 1 if ($ENV{DBI_DSN} =~ /SQLite/i);
 	my($dbh)               = DBI -> connect($ENV{DBI_DSN}, $ENV{DBI_USER}, $ENV{DBI_PASS}, $attr);
 
-	$dbh -> do('PRAGMA foreign_keys = ON') if ($ENV{DBI_DSN} =~ /SQLite/i);
+	$dbh -> do('pragma foreign_keys = on') if ($ENV{DBI_DSN} =~ /SQLite/i);
 
-	print Data::Dumper -> Dump
-	([
-		DBIx::Admin::TableInfo -> new(dbh => $dbh) -> info()
-	]);
-
-See docs/contacts.*.log for sample output. The input to these runs is the database created by the module
-L<App::Office::Contacts>, with its config file first set for Postgres and then for SQLite.
+	print Dumper(DBIx::Admin::TableInfo -> new(dbh => $dbh) -> info() );
 
 If the environment vaiables DBI_DSN, DBI_USER and DBI_PASS are set (the latter 2 are optional [e.g. for SQLite),
 then this demonstrates extracting a lot of information from a database schema.
@@ -301,6 +293,8 @@ then this demonstrates extracting a lot of information from a database schema.
 Also, for Postgres, you can set DBI_SCHEMA to a list of schemas, e.g. when processing the MusicBrainz database.
 
 For details, see L<http://blogs.perl.org/users/ron_savage/2013/03/graphviz2-and-the-dread-musicbrainz-db.html>.
+
+See also xt/author/mysql.fk.pl and xt/author/fk.t.
 
 =head1 Description
 

@@ -66,6 +66,8 @@ for my $db (keys %$config)
 
 	diag "Started testing $message";
 
+	$dbh -> do('pragma foreign_keys = on') if ($dsn =~ /SQLite/i);
+
 	# Drop tables if they exist.
 
 	for $table_name (reverse @table_name)
@@ -128,7 +130,7 @@ SQL
 		diag '-' x 50;
 		diag "Dumping table info for table '$table_name'";
 		#diag Dumper($$table_info{$table_name});
-		diag Dumper($$table_info{one}{foreign_keys});
+		diag Dumper($$table_info{$table_name}{foreign_keys});
 		diag "Dumped table info for table '$table_name'";
 	}
 
