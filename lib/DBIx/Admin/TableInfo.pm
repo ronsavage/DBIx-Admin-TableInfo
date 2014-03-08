@@ -58,7 +58,7 @@ sub BUILD
 {
 	my($self) = @_;
 
-	$self -> schema(dbh2schema($self -> dbh) );
+	$self -> schema(dbh2schema($self -> dbh) ) if (! defined $self -> schema);
 	$self -> _info;
 
 } # End of BUILD.
@@ -87,9 +87,10 @@ sub columns
 sub dbh2schema
 {
 	my($dbh)    = @_;
-	my($vendor) = uc $dbh -> get_info(17);
+	my($vendor) = uc $dbh -> get_info(17); # SQL_DBMS_NAME.
 	my(%schema) =
 	(
+		MYSQL      => undef,
 		ORACLE     => uc $$dbh{Username},
 		POSTGRESQL => 'public',
 		SQLITE     => 'main',
@@ -286,17 +287,9 @@ This program is shipped as examples/table.info.pl.
 
 	$dbh -> do('PRAGMA foreign_keys = ON') if ($ENV{DBI_DSN} =~ /SQLite/i);
 
-	my($schema) = $ENV{DBI_DSN} =~ /^dbi:Oracle/i
-		? uc $ENV{DBI_USER}
-		: $ENV{DBI_DSN} =~ /^dbi:Pg/i
-		? 'public'
-		: $ENV{DBI_DSN} =~ /^dbi:SQLite/i
-		? 'main'
-		: undef;
-
 	print Data::Dumper -> Dump
 	([
-		DBIx::Admin::TableInfo -> new(dbh => $dbh, schema => $schema) -> info()
+		DBIx::Admin::TableInfo -> new(dbh => $dbh) -> info()
 	]);
 
 See docs/contacts.*.log for sample output. The input to these runs is the database created by the module
@@ -496,7 +489,9 @@ This parameter is optional.
 
 =back
 
-=head1 Method: columns($table_name, $by_position)
+=head1 Methods
+
+=head2 columns($table_name, $by_position)
 
 Returns an array ref of column names.
 
@@ -504,7 +499,27 @@ By default they are sorted by name.
 
 However, if you pass in a true value for $by_position, they are sorted by the column attribute ORDINAL_POSITION. This is Postgres-specific.
 
-=head1 Method: info()
+=head2 dbh2schema($dbh)
+
+Warning: This is a function, not a method. It is called like this:
+
+	my($schema) = DBIx::Admin::TableInfo::dbh2schema($dbh);
+
+The code is just:
+
+	my($dbh)    = @_;
+	my($vendor) = uc $dbh -> get_info(17); # SQL_DBMS_NAME.
+	my(%schema) =
+	(
+		MYSQL      => undef,
+		ORACLE     => uc $$dbh{Username},
+		POSTGRESQL => 'public',
+		SQLITE     => 'main',
+	);
+
+	return $schema{$vendor};
+
+=head2 info()
 
 Returns a hash ref of all available data.
 
@@ -613,14 +628,14 @@ These columns make up the primary key of the current table.
 
 =back
 
-=head1 Method: refresh()
+=head2 refresh()
 
 Returns the same hash ref as info().
 
 Use this after changing the database schema, when you want this module to re-interrogate
 the database server.
 
-=head1 Method: tables()
+=head2 tables()
 
 Returns an array ref of table names.
 
@@ -930,6 +945,32 @@ That means, for the 'visibilities' table, the info() method in the current modul
 This is saying that for the table 'visibilities', there is a foreign key in the 'organizations' table.
 That foreign key is called 'visibility_id', and it points to the key called 'id' in the 'visibilities'
 table.
+
+=head2 How do I use schemas in Postgres?
+
+You may need to do something like this:
+
+	$dbh -> do("set search_path to $ENV{DBI_SCHEMA}") if ($ENV{DBI_SCHEMA});
+
+$ENV{DBI_SCHEMA} can be a comma-separated list, as in:
+
+	$dbh -> do("set search_path to my_schema, public");
+
+See L<DBD::Pg> for details.
+
+=head2 See Also
+
+L<DBIx::Admin::CreateTable>.
+
+L<DBIx::Admin::DSNManager>.
+
+=head1 Version Numbers
+
+Version numbers < 1.00 represent development versions. From 1.00 up, they are production versions.
+
+=head1 Support
+
+Log a bug on RT: L<https://rt.cpan.org/Public/Dist/Display.html?Name=DBIx-Admin-TableInfo>.
 
 =head1 Author
 

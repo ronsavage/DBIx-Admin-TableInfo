@@ -40,7 +40,7 @@ my($dsn, $dbh);
 my($engine);
 my($message);
 my($primary_key);
-my($sql, $schema);
+my($sql);
 my($table_name, $table_manager, $table_info);
 my($use_for_testing);
 my($vendor, $version);
@@ -118,8 +118,7 @@ SQL
 
 	# Process tables.
 
-	$schema        = DBIx::Admin::TableInfo::dbh2schema($dbh);
-	$table_manager = DBIx::Admin::TableInfo -> new(dbh => $dbh, schema => $schema);
+	$table_manager = DBIx::Admin::TableInfo -> new(dbh => $dbh);
 	$table_info    = $table_manager -> info;
 
 #=pod
