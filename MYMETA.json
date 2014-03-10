@@ -38,7 +38,7 @@
    "provides" : {
       "DBIx::Admin::TableInfo" : {
          "file" : "lib/DBIx/Admin/TableInfo.pm",
-         "version" : "2.10"
+         "version" : "2.11"
       }
    },
    "release_status" : "stable",
@@ -47,5 +47,5 @@
          "http://www.perlfoundation.org/artistic_license_2_0"
       ]
    },
-   "version" : "2.10"
+   "version" : "2.11"
 }
