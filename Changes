@@ -1,5 +1,8 @@
 Revision history for Perl extension DBIx::Admin::TableInfo.
 
+2.11  Mon Mar 10 13:30:55 2014
+	- Add Test::Version to the pre-reqs.
+
 2.10  Thu Mar  6 09:45:07 2014
 	- Rename CHANGES to Changes as per CPAN::Spec::Changes.
 	- Move t/pod.t to xt/author/.

@@ -36,6 +36,7 @@ WriteMakefile
 		'strict'                   => 0,
 		'Test::More'   	           => 0,
 #		'Test::Pod'	               => 1.45, # Make it optional. See t/pod.t
+		'Test::Version'            => 1.002003,
 		'warnings'                 => 0,
 	},
 	VERSION_FROM	=> 'lib/DBIx/Admin/TableInfo.pm',
