@@ -1,5 +1,9 @@
 Revision history for Perl extension DBIx::Admin::TableInfo.
 
+2.12  Tue Jul 22 18:34:00 2014
+	- Change the licence (sic) statement in DBIx::Admin::TableInfo to say 'The Artistic License 2.0'
+		rather than just 'The Artistic License'. See RT#97392. Thanx to Petr Pisar for the report.
+
 2.11  Mon Mar 10 13:30:55 2014
 	- Add Test::Version to the pre-reqs.
 

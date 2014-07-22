@@ -144,7 +144,7 @@ SQL
 	{
 		diag "# Dropping table '$table_name'. It must exist now\n";
 
-		$creator -> drop_table($table_name);
+		#$creator -> drop_table($table_name);
 
 		ok(1, 'Deleted table which must exist');
 

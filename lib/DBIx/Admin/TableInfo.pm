@@ -50,7 +50,7 @@ has type =>
 	required => 0,
 );
 
-our $VERSION = '2.11';
+our $VERSION = '2.12';
 
 # -----------------------------------------------
 
@@ -981,7 +981,7 @@ Australian copyright (c) 2004, Ron Savage.
 
 	All Programs of mine are 'OSI Certified Open Source Software';
 	you can redistribute them and/or modify them under the terms of
-	The Artistic License, a copy of which is available at:
+	The Artistic License 2.0, a copy of which is available at:
 	http://www.opensource.org/licenses/index.html
 
 =cut
