@@ -722,9 +722,11 @@ L<https://metacpan.org/pod/DBI#foreign_key_info>. Look closely at the usage of t
 
 =over 4
 
+Note: The table names here come from xt/author/fk.t.
+
 =item o MySQL
 
-	two => {
+	one => {
 		DEFERABILITY => undef,
 		DELETE_RULE => undef,
 		FKCOLUMN_NAME => "one_id",
@@ -744,7 +746,7 @@ L<https://metacpan.org/pod/DBI#foreign_key_info>. Look closely at the usage of t
 
 =item o Postgres
 
-	two => {
+	one => {
 		DEFERABILITY => 7,
 		DELETE_RULE => 3,
 		FK_COLUMN_NAME => "one_id",
@@ -766,7 +768,7 @@ L<https://metacpan.org/pod/DBI#foreign_key_info>. Look closely at the usage of t
 
 =item o SQLite
 
-	two => {
+	one => {
 		DEFERABILITY => undef,
 		DELETE_RULE => 3,
 		FK_COLUMN_NAME => "one_id",
