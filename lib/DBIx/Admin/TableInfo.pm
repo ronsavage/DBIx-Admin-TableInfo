@@ -178,6 +178,8 @@ sub _info
 		'SET DEFAULT' => 4,
 	);
 
+	open(my $fh, '>', '/home/ron/perl.modules/foreign.log');
+
 	for $table_name (@table_name)
 	{
 		$$info{$table_name}{foreign_keys} = [];
@@ -189,6 +191,9 @@ sub _info
 				for my $row (@{$self -> dbh -> selectall_arrayref("pragma foreign_key_list($foreign_table)")})
 				{
 					next if ($$row[2] ne $table_name);
+
+					print $fh "Table: $table_name. Foreign table: $foreign_table. \n";
+					print $fh Dumper($row);
 
 					push @{$$info{$table_name}{foreign_keys} },
 					{
@@ -232,6 +237,8 @@ sub _info
 			}
 		}
 	}
+
+	close $fh;
 
 	$self -> info($info);
 

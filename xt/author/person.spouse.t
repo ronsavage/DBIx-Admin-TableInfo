@@ -60,7 +60,7 @@ for my $db (keys %$config)
 	$attr    = $$config{$db}{attributes};
 	$dbh     = DBI -> connect($dsn, $$config{$db}{username}, $$config{$db}{password}, $attr);
 	$vendor  = uc $dbh -> get_info(17); # SQL_DBMS_NAME.
-	$version = $dbh -> get_info(18); # SQL_DBMS_VER.
+	$version = $dbh -> get_info(18);    # SQL_DBMS_VER.
 	$engine  = $vendor eq 'MYSQL' ? 'engine=innodb' : '';
 	$creator = DBIx::Admin::CreateTable -> new(dbh => $dbh);
 	$message = "DSN section: $db. Vendor: $vendor V $version. \n";
