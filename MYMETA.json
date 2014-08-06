@@ -38,7 +38,7 @@
    "provides" : {
       "DBIx::Admin::TableInfo" : {
          "file" : "lib/DBIx/Admin/TableInfo.pm",
-         "version" : "2.12"
+         "version" : "3.00"
       }
    },
    "release_status" : "stable",
@@ -47,5 +47,5 @@
          "http://opensource.org/licenses/artistic-license-2.0.php"
       ]
    },
-   "version" : "2.12"
+   "version" : "3.00"
 }

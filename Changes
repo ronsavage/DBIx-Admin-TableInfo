@@ -1,5 +1,19 @@
 Revision history for Perl extension DBIx::Admin::TableInfo.
 
+3.00  Wed Aug  6 09:45:00 2014
+	- Change the internal data structure returned by method info(), where it pertains to foreign keys.
+		The old code returned a hashref $$info{$table_name}{foreign_keys}{$foreign_table}.
+		This is a bug, since it limits the code to one relationship between $table_name and $foreign_table.
+		Consider this SQL: create table people(id $primary_key, ...);
+		And: create table spouses(id $primary_key, person_id integer not null references people(id),
+			spouse_id integer not null references people(id) ).
+		Here we have 2 foreign keys in the same ('spouses') table, both pointing to the 'people' table.
+		So the hashref has become an arrayref. This affects GraphViz2::DBI, and of course any other module
+		using DBIx::Admin::TableInfo. Hence the version # change from 2.* to 3.*.
+	- Add xt/author/person.spouse.t to test the new code.
+	- Update docs for method info(), and in reference to versions of MySQL, Pg and SQLite tested.
+	- Remove docs for DBD::mysql V 3.
+
 2.12  Tue Jul 22 18:34:00 2014
 	- Change the licence (sic) statement in DBIx::Admin::TableInfo to say 'The Artistic License 2.0'
 		rather than just 'The Artistic License'. See RT#97392. Thanx to Petr Pisar for the report.

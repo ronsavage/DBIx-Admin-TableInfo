@@ -15,4 +15,5 @@ t/version.t
 xt/author/dsn.ini
 xt/author/fk.t
 xt/author/mysql.fk.pl
+xt/author/person.spouse.t
 xt/author/pod.t

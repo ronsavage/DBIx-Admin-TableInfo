@@ -50,7 +50,7 @@ has type =>
 	required => 0,
 );
 
-our $VERSION = '2.12';
+our $VERSION = '3.00';
 
 # -----------------------------------------------
 
@@ -180,6 +180,8 @@ sub _info
 
 	for $table_name (@table_name)
 	{
+		$$info{$table_name}{foreign_keys} = [];
+
 		for $foreign_table (grep{! /^$table_name$/} @table_name)
 		{
 			if ($vendor eq 'SQLITE')
@@ -188,7 +190,7 @@ sub _info
 				{
 					next if ($$row[2] ne $table_name);
 
-					$$info{$table_name}{foreign_keys}{$foreign_table} =
+					push @{$$info{$table_name}{foreign_keys} },
 					{
 						DEFERABILITY      => undef,
 						DELETE_RULE       => $referential_action{$$row[6]},
@@ -217,13 +219,14 @@ sub _info
 				if ($vendor eq 'MySQL')
 				{
 					my($hashref) = $table_sth->fetchall_hashref(['PKTABLE_NAME']);
-					$$info{$table_name}{foreign_keys}{$foreign_table} = $$hashref{$table_name} if ($$hashref{$table_name});
+
+					push @{$$info{$table_name}{foreign_keys} }, $$hashref{$table_name} if ($$hashref{$table_name});
 				}
 				else
 				{
 					for $column_data (@{$table_sth -> fetchall_arrayref({})})
 					{
-						$$info{$table_name}{foreign_keys}{$foreign_table} = {%$column_data};
+						push @{$$info{$table_name}{foreign_keys} }, {%$column_data};
 					}
 				}
 			}
@@ -294,7 +297,7 @@ Also, for Postgres, you can set DBI_SCHEMA to a list of schemas, e.g. when proce
 
 For details, see L<http://blogs.perl.org/users/ron_savage/2013/03/graphviz2-and-the-dread-musicbrainz-db.html>.
 
-See also xt/author/mysql.fk.pl and xt/author/fk.t.
+See also xt/author/fk.t, xt/author/mysql.fk.pl and xt/author/person.spouse.t.
 
 =head1 Description
 
@@ -324,7 +327,7 @@ Warnings:
 
 =item o New Notes
 
-I am testing V 2.04 of this module with MySql V 5.0.51a and DBD::mysql V 4.014.
+I am testing V 3.00 of this module with MariaDB V 5.5.38 and DBD::mysql V 4.027.
 
 To get foreign key information in the output, the create table statement has to:
 
@@ -356,30 +359,6 @@ You have been warned.
 
 =back
 
-=item o Old Notes
-
-The MySQL client C<DBD::mysql> V 3.0002 does not support C<primary_key_info()>,
-so this module emulates it by stockpiling a list of columns which have the
-attribute 'mysql_is_pri_key' set.
-
-The problem with this is that if a primary key consists of more than 1 column,
-C<DBD::mysql> does not indicate the order of these columns within the key, so
-this module pretends that they are in the same order as the order of columns
-returned by the call to C<column_info()>.
-
-Likewise, C<DBD::mysql> does not support C<foreign_key_info()>, so in the case
-of MySQL, nothing is reported for foreign keys.
-
-For MySQL V 5.0.18, section 14.2.6.4 of the manual says that for InnoDB tables,
-the SQL "show table status from 'db name' like 'table name'" will display the foreign
-key info in the column called 'Comment', but this is simply not true. The 'Comment'
-column contains a string such as 'InnoDB free: 4096 kB'.
-
-Likewise, the SQL "show create table 'table name'" reveals than MySQL does not
-preserve 'create table' clauses such as 'references other_table(other_column)'.
-
-So, at the moment, I see no way of displaying foreign key information under MySQL.
-
 =back
 
 =item o Oracle
@@ -388,7 +367,7 @@ See the L</FAQ> for which tables are ignored under Oracle.
 
 =item o Postgres
 
-I am testing V 2.04 of this module with Postgres V 08.03.1100 and DBD::Pg V 2.17.1.
+I am testing V 3.00 of this module with Postgres V 9.1.3 and DBD::Pg V 3.3.0.
 
 The latter now takes '%' as the value of the 'table' parameter to new(), whereas
 older versions of DBD::Pg required 'table' to be set to 'table'.
@@ -397,7 +376,7 @@ See the L</FAQ> for which tables are ignored under Postgres.
 
 =item o SQLite
 
-I am testing V 2.04 of this module with SQLite V 3.6.22 and DBD::SQLite V 1.29.
+I am testing V 3.00 of this module with SQLite V 3.8.4.1 and DBD::SQLite V 1.42.
 
 See the L</FAQ> for which tables are ignored under SQLite.
 
@@ -588,20 +567,18 @@ For the attributes of the tables, there are no more levels in the hash ref.
 
 =back
 
-=item o Third level, after 'foreign_keys': The keys are the names of tables
+=item o Third level, after 'foreign_keys': An arrayref contains the details (if any)
 
-These tables have foreign keys which point to the current table.
+But beware slightly differing spellings depending on the database server. This is documented in
+L<https://metacpan.org/pod/DBI#foreign_key_info>. Look closely at the usage of the '_' character.
 
-	my($foreign_keys) = $$info{$table_name}{foreign_keys};
+	my($vendor) = uc $dbh -> get_info(17); # SQL_DBMS_NAME.
 
-	for $foreign_table (sort keys %$foreign_keys)
+	for $item (@{$$info{$table_name}{foreign_keys} })
 	{
-		$foreign_key = $$foreign_keys{$foreign_table};
+		# Get the name of the table pointed to.
 
-		for $attribute (sort keys %$foreign_key)
-		{
-			Use...
-		}
+		$primary_table = ($vendor eq 'MYSQL') ? $$item{PKTABLE_NAME} : $$item{UK_TABLE_NAME};
 	}
 
 =item o Third level, after 'primary_keys': The keys are the names of columns
@@ -707,18 +684,18 @@ See the examples/ directory in the distro.
 
 =head2 Which versions of the servers did you test?
 
-	Versions as at 2014-03-07
-	+----------|------------+
-	|  Vendor  |     V      |
-	+----------|------------+
-	|  MariaDB |   5.5.36   |
-	+----------|------------+
-	|  Oracle  | 10.2.0.1.0 | (Not tested for years)
-	+----------|------------+
-	| Postgres |   9.1.12   |
-	+----------|------------+
-	|  SQLite  |   3.7.17   |
-	+----------|------------+
+	Versions as at 2014-08-06:
+	+----------|-------------+
+	|  Vendor  |      V      |
+	+----------|-------------+
+	|  MariaDB |   5.5.38    |
+	+----------|-------------+
+	|  Oracle  | 10.2.0.1.0  | (Not tested for years)
+	+----------|-------------+
+	| Postgres |    9.1.3    |
+	+----------|-------------+
+	|  SQLite  |   3.8.4.1   |
+	+----------|-------------+
 
 =head2 Which tables are ignored for which databases?
 
@@ -812,6 +789,10 @@ L<https://metacpan.org/pod/DBI#foreign_key_info>. Look closely at the usage of t
 =back
 
 You can also play with xt/author/fk.t and xt/author/dsn.ini (especially the 'active' option).
+
+fk.t does not delete the tables as it exits. This is so xt/author/mysql.fk.pl has something to play with.
+
+See also xt/author/person.spouse.t.
 
 =head2 Does DBIx::Admin::TableInfo work with SQLite databases?
 
