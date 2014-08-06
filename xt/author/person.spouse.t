@@ -31,7 +31,7 @@ has dsn_manager =>
 
 my($dsn_manager) = DBIx::Admin::DSNManager -> new(file_name => 'xt/author/dsn.ini');
 my($config)      = $dsn_manager -> config;
-my(@table_name)  = (qw/person spouse/);
+my(@table_name)  = (qw/people spouses/);
 my($test_count)  = 0;
 
 my($active, $attr);
@@ -91,7 +91,7 @@ for my $db (keys %$config)
 		diag "Creating table '$table_name'. It will not exist yet\n";
 		diag "Primary key attributes: $primary_key\n";
 
-		if ($table_name eq 'person')
+		if ($table_name eq 'people')
 		{
 			$sql = <<SQL;
 create table $table_name
@@ -109,8 +109,8 @@ create table $table_name
 	id        $primary_key,
 	person_id integer not null,
 	spouse_id integer not null,
-	foreign key(person_id) references person(id),
-	foreign key(spouse_id) references person(id)
+	foreign key(person_id) references people(id),
+	foreign key(spouse_id) references people(id)
 ) $engine
 SQL
 		}
@@ -127,10 +127,16 @@ SQL
 	$primary_index = ($vendor eq 'MYSQL') ? 'PKTABLE_NAME' : 'UK_TABLE_NAME';
 	$foreign_index = ($vendor eq 'MYSQL') ? 'FKTABLE_NAME' : 'FK_TABLE_NAME';
 
-	ok($$table_info{person}{foreign_keys}[0]{$primary_index} eq 'person', 'Primary table name for foreign key 1');
-	ok($$table_info{person}{foreign_keys}[0]{$foreign_index} eq 'spouse', 'Foreign table name for foreign key 1');
-	ok($$table_info{person}{foreign_keys}[1]{$primary_index} eq 'person', 'Primary table name for foreign key 2');
-	ok($$table_info{person}{foreign_keys}[1]{$foreign_index} eq 'spouse', 'Foreign table name for foreign key 2');
+	ok($$table_info{people}{foreign_keys}[0]{$primary_index} eq 'people',  'Primary table name for foreign key 1');
+	ok($$table_info{people}{foreign_keys}[0]{$foreign_index} eq 'spouses', 'Foreign table name for foreign key 1');
+
+	# MySQL can drop an index if another index can be used.
+
+	if ($#{$$table_info{people}{foreign_keys} } > 0)
+	{
+		ok($$table_info{people}{foreign_keys}[1]{$primary_index} eq 'people',  'Primary table name for foreign key 2');
+		ok($$table_info{people}{foreign_keys}[1]{$foreign_index} eq 'spouses', 'Foreign table name for foreign key 2');
+	}
 
 	$test_count += 4;
 

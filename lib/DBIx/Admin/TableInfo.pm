@@ -79,7 +79,7 @@ sub columns
 		return [sort{$a cmp $b} keys %{$$info{$table}{columns} }];
 	}
 
-}	# End of columns.
+} # End of columns.
 
 # -----------------------------------------------
 # Warning: This is a function, not a method.
@@ -178,8 +178,6 @@ sub _info
 		'SET DEFAULT' => 4,
 	);
 
-	open(my $fh, '>', '/home/ron/perl.modules/foreign.log');
-
 	for $table_name (@table_name)
 	{
 		$$info{$table_name}{foreign_keys} = [];
@@ -191,9 +189,6 @@ sub _info
 				for my $row (@{$self -> dbh -> selectall_arrayref("pragma foreign_key_list($foreign_table)")})
 				{
 					next if ($$row[2] ne $table_name);
-
-					print $fh "Table: $table_name. Foreign table: $foreign_table. \n";
-					print $fh Dumper($row);
 
 					push @{$$info{$table_name}{foreign_keys} },
 					{
@@ -210,7 +205,7 @@ sub _info
 						UK_DATA_TYPE      => undef,
 						UK_NAME           => undef,
 						UK_TABLE_CAT      => undef,
-						UK_TABLE_NAME     => $table_name,
+						UK_TABLE_NAME     => $$row[2],
 						UK_TABLE_SCHEM    => undef,
 						UNIQUE_OR_PRIMARY => undef,
 						UPDATE_RULE       => $referential_action{$$row[5]},
@@ -221,7 +216,7 @@ sub _info
 			{
 				$table_sth = $self -> dbh -> foreign_key_info($self -> catalog, $self -> schema, $table_name, $self -> catalog, $self -> schema, $foreign_table) || next;
 
-				if ($vendor eq 'MySQL')
+				if ($vendor eq 'MYSQL')
 				{
 					my($hashref) = $table_sth->fetchall_hashref(['PKTABLE_NAME']);
 
@@ -238,11 +233,9 @@ sub _info
 		}
 	}
 
-	close $fh;
-
 	$self -> info($info);
 
-}	# End of _info.
+} # End of _info.
 
 # -----------------------------------------------
 
@@ -254,7 +247,7 @@ sub refresh
 
 	return $self -> info;
 
-}	# End of refresh.
+} # End of refresh.
 
 # -----------------------------------------------
 
@@ -264,13 +257,11 @@ sub tables
 
 	return [sort keys %{$self -> info}];
 
-}	# End of tables.
+} # End of tables.
 
 # -----------------------------------------------
 
 1;
-
-__END__
 
 =head1 NAME
 
@@ -704,6 +695,8 @@ See the examples/ directory in the distro.
 	|  SQLite  |   3.8.4.1   |
 	+----------|-------------+
 
+But see these L<warnings|https://metacpan.org/pod/DBIx::Admin::TableInfo#Description> when using MySQL/MariaDB.
+
 =head2 Which tables are ignored for which databases?
 
 Here is the code which skips some tables:
@@ -714,86 +707,132 @@ Here is the code which skips some tables:
 
 =head2 How do I identify foreign keys?
 
+Note: The table names here come from xt/author/person.spouse.t.
+
 See L<DBIx::Admin::CreateTable/FAQ> for database server-specific create statements to activate foreign keys.
 
 Then try:
 
 	my($info) = DBIx::Admin::TableInfo -> new(dbh => $dbh) -> info;
 
-	print Data::Dumper::Concise::Dumper($$info{one}{foreign_keys}), "\n";
+	print Data::Dumper::Concise::Dumper($$info{people}{foreign_keys}), "\n";
 
-Output follows. Each is a hashref with the keys being the names of tables (in this case 'two') pointing to table 'one'.
+Output follows.
 
 But beware slightly differing spellings depending on the database server. This is documented in
 L<https://metacpan.org/pod/DBI#foreign_key_info>. Look closely at the usage of the '_' character.
 
 =over 4
 
-Note: The table names here come from xt/author/fk.t.
-
 =item o MySQL
 
-	one => {
-		DEFERABILITY => undef,
-		DELETE_RULE => undef,
-		FKCOLUMN_NAME => "one_id",
-		FKTABLE_CAT => "def",
-		FKTABLE_NAME => "two",
-		FKTABLE_SCHEM => "testdb",
-		FK_NAME => "two_ibfk_1",
-		KEY_SEQ => 1,
-		PKCOLUMN_NAME => "id",
-		PKTABLE_CAT => undef,
-		PKTABLE_NAME => "one",
-		PKTABLE_SCHEM => "testdb",
-		PK_NAME => undef,
-		UNIQUE_OR_PRIMARY => undef,
-		UPDATE_RULE => undef
-	}
+	[
+	  {
+	    DEFERABILITY => undef,
+	    DELETE_RULE => undef,
+	    FKCOLUMN_NAME => "spouse_id",
+	    FKTABLE_CAT => "def",
+	    FKTABLE_NAME => "spouses",
+	    FKTABLE_SCHEM => "testdb",
+	    FK_NAME => "spouses_ibfk_2",
+	    KEY_SEQ => 1,
+	    PKCOLUMN_NAME => "id",
+	    PKTABLE_CAT => undef,
+	    PKTABLE_NAME => "people",
+	    PKTABLE_SCHEM => "testdb",
+	    PK_NAME => undef,
+	    UNIQUE_OR_PRIMARY => undef,
+	    UPDATE_RULE => undef
+	  }
+	]
+
+Yes, there is just 1 element in this arrayref. MySQL can sliently drop an index if another index can be used.
 
 =item o Postgres
 
-	one => {
-		DEFERABILITY => 7,
-		DELETE_RULE => 3,
-		FK_COLUMN_NAME => "one_id",
-		FK_DATA_TYPE => "int4",
-		FK_NAME => "two_one_id_fkey",
-		FK_TABLE_CAT => undef,
-		FK_TABLE_NAME => "two",
-		FK_TABLE_SCHEM => "public",
-		ORDINAL_POSITION => 1,
-		UK_COLUMN_NAME => "id",
-		UK_DATA_TYPE => "int4",
-		UK_NAME => "one_pkey",
-		UK_TABLE_CAT => undef,
-		UK_TABLE_NAME => "one",
-		UK_TABLE_SCHEM => "public",
-		UNIQUE_OR_PRIMARY => "PRIMARY",
-		UPDATE_RULE => 3
-	}
+	[
+	  {
+	    DEFERABILITY => 7,
+	    DELETE_RULE => 3,
+	    FK_COLUMN_NAME => "person_id",
+	    FK_DATA_TYPE => "int4",
+	    FK_NAME => "spouses_person_id_fkey",
+	    FK_TABLE_CAT => undef,
+	    FK_TABLE_NAME => "spouses",
+	    FK_TABLE_SCHEM => "public",
+	    ORDINAL_POSITION => 1,
+	    UK_COLUMN_NAME => "id",
+	    UK_DATA_TYPE => "int4",
+	    UK_NAME => "people_pkey",
+	    UK_TABLE_CAT => undef,
+	    UK_TABLE_NAME => "people",
+	    UK_TABLE_SCHEM => "public",
+	    UNIQUE_OR_PRIMARY => "PRIMARY",
+	    UPDATE_RULE => 3
+	  },
+	  {
+	    DEFERABILITY => 7,
+	    DELETE_RULE => 3,
+	    FK_COLUMN_NAME => "spouse_id",
+	    FK_DATA_TYPE => "int4",
+	    FK_NAME => "spouses_spouse_id_fkey",
+	    FK_TABLE_CAT => undef,
+	    FK_TABLE_NAME => "spouses",
+	    FK_TABLE_SCHEM => "public",
+	    ORDINAL_POSITION => 1,
+	    UK_COLUMN_NAME => "id",
+	    UK_DATA_TYPE => "int4",
+	    UK_NAME => "people_pkey",
+	    UK_TABLE_CAT => undef,
+	    UK_TABLE_NAME => "people",
+	    UK_TABLE_SCHEM => "public",
+	    UNIQUE_OR_PRIMARY => "PRIMARY",
+	    UPDATE_RULE => 3
+	  }
+	]
 
 =item o SQLite
 
-	one => {
-		DEFERABILITY => undef,
-		DELETE_RULE => 3,
-		FK_COLUMN_NAME => "one_id",
-		FK_DATA_TYPE => undef,
-		FK_NAME => undef,
-		FK_TABLE_CAT => undef,
-		FK_TABLE_NAME => "two",
-		FK_TABLE_SCHEM => undef,
-		ORDINAL_POSITION => 0,
-		UK_COLUMN_NAME => "id",
-		UK_DATA_TYPE => undef,
-		UK_NAME => undef,
-		UK_TABLE_CAT => undef,
-		UK_TABLE_NAME => "one",
-		UK_TABLE_SCHEM => undef,
-		UNIQUE_OR_PRIMARY => undef,
-		UPDATE_RULE => 3
-	}
+	[
+	  {
+	    DEFERABILITY => undef,
+	    DELETE_RULE => 3,
+	    FK_COLUMN_NAME => "spouse_id",
+	    FK_DATA_TYPE => undef,
+	    FK_NAME => undef,
+	    FK_TABLE_CAT => undef,
+	    FK_TABLE_NAME => "spouses",
+	    FK_TABLE_SCHEM => undef,
+	    ORDINAL_POSITION => 0,
+	    UK_COLUMN_NAME => "id",
+	    UK_DATA_TYPE => undef,
+	    UK_NAME => undef,
+	    UK_TABLE_CAT => undef,
+	    UK_TABLE_NAME => "people",
+	    UK_TABLE_SCHEM => undef,
+	    UNIQUE_OR_PRIMARY => undef,
+	    UPDATE_RULE => 3
+	  },
+	  {
+	    DEFERABILITY => undef,
+	    DELETE_RULE => 3,
+	    FK_COLUMN_NAME => "person_id",
+	    FK_DATA_TYPE => undef,
+	    FK_NAME => undef,
+	    FK_TABLE_CAT => undef,
+	    FK_TABLE_NAME => "spouses",
+	    FK_TABLE_SCHEM => undef,
+	    ORDINAL_POSITION => 0,
+	    UK_COLUMN_NAME => "id",
+	    UK_DATA_TYPE => undef,
+	    UK_NAME => undef,
+	    UK_TABLE_CAT => undef,
+	    UK_TABLE_NAME => "people",
+	    UK_TABLE_SCHEM => undef,
+	    UNIQUE_OR_PRIMARY => undef,
+	    UPDATE_RULE => 3
+	  }
+	]
 
 =back
 
@@ -805,17 +844,18 @@ See also xt/author/person.spouse.t.
 
 =head2 Does DBIx::Admin::TableInfo work with SQLite databases?
 
-Yes. As of V 2.08, this module uses SQLite's "pragma foreign_key_list($table_name)" to emulate L<DBI>'s
-$dbh -> foreign_key_info(...).
+Yes. As of V 2.08, this module uses the SQLite code "pragma foreign_key_list($table_name)" to emulate the L<DBI>
+call to foreign_key_info(...).
 
 =head2 What is returned by the SQLite "pragma foreign_key_list($table_name)" call?
 
-	Fields returned are:
+An arrayref is returned. Indexes and their interpretations:
+
 	0: COUNT   (0, 1, ...)
 	1: KEY_SEQ (0, or column # (1, 2, ...) within multi-column key)
-	2: FKTABLE_NAME
-	3: PKCOLUMN_NAME
-	4: FKCOLUMN_NAME
+	2: PK_TABLE_NAME
+	3: FK_COLUMN_NAME
+	4: PK_COLUMN_NAME
 	5: UPDATE_RULE
 	6: DELETE_RULE
 	7: 'NONE' (Constant string)
@@ -823,6 +863,8 @@ $dbh -> foreign_key_info(...).
 As these are stored in an arrayref, I use $$row[$i] just below to refer to the elements of the array.
 
 =head2 How are these values mapped into the output?
+
+See also the next point.
 
 	my(%referential_action) =
 	(
@@ -842,14 +884,14 @@ The hashref returned for foreign keys contains these key-value pairs:
 		FK_DATA_TYPE      => undef,
 		FK_NAME           => undef,
 		FK_TABLE_CAT      => undef,
-		FK_TABLE_NAME     => $foreign_table,
+		FK_TABLE_NAME     => $table_name,
 		FK_TABLE_SCHEM    => undef,
 		ORDINAL_POSITION  => $$row[1],
 		UK_COLUMN_NAME    => $$row[4],
 		UK_DATA_TYPE      => undef,
 		UK_NAME           => undef,
 		UK_TABLE_CAT      => undef,
-		UK_TABLE_NAME     => $table_name,
+		UK_TABLE_NAME     => $$row[2],
 		UK_TABLE_SCHEM    => undef,
 		UNIQUE_OR_PRIMARY => undef,
 		UPDATE_RULE       => $referential_action{$$row[5]},
@@ -857,9 +899,13 @@ The hashref returned for foreign keys contains these key-value pairs:
 
 This list of keys matches what is returned when processing a Postgres database.
 
-=head2 Haven't you got FK and PK backwards?
+=head2 Have you got FK and PK backwards?
 
-No, I don't think so.
+I certainly hope not. To me the FK_TABLE_NAME points to the UK_TABLE_NAME.
+
+The "pragma foreign_key_list($table_name)" call for SQLite returns data from the create statement, and thus it
+reports what the given table points to. The DBI call to foreign_key_info(...) returns data about foreign keys
+referencing (pointing to) the given table. This can be confusing.
 
 Here is a method from the module L<App::Office::Contacts::Util::Create>, part of L<App::Office::Contacts>.
 
