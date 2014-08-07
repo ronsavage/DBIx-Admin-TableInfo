@@ -315,17 +315,11 @@ It is a convenient wrapper around all of these DBI methods:
 
 =back
 
-Warnings:
-
 =over 4
 
 =item o MySQL
 
-=over 4
-
-=item o New Notes
-
-I am testing V 3.00 of this module with MariaDB V 5.5.38 and DBD::mysql V 4.027.
+Warning:
 
 To get foreign key information in the output, the create table statement has to:
 
@@ -353,10 +347,6 @@ has to, for MySql, look like:
 
 	create table designs (...) engine=innodb
 
-You have been warned.
-
-=back
-
 =back
 
 =item o Oracle
@@ -365,16 +355,12 @@ See the L</FAQ> for which tables are ignored under Oracle.
 
 =item o Postgres
 
-I am testing V 3.00 of this module with Postgres V 9.1.3 and DBD::Pg V 3.3.0.
-
 The latter now takes '%' as the value of the 'table' parameter to new(), whereas
 older versions of DBD::Pg required 'table' to be set to 'table'.
 
 See the L</FAQ> for which tables are ignored under Postgres.
 
 =item o SQLite
-
-I am testing V 3.00 of this module with SQLite V 3.8.4.1 and DBD::SQLite V 1.42.
 
 See the L</FAQ> for which tables are ignored under SQLite.
 
