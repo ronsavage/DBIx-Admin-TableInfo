@@ -39,14 +39,14 @@
    "provides" : {
       "DBIx::Admin::TableInfo" : {
          "file" : "lib/DBIx/Admin/TableInfo.pm",
-         "version" : "3.00"
+         "version" : "3.01"
       }
    },
    "release_status" : "stable",
    "resources" : {
       "license" : [
-         "http://opensource.org/licenses/artistic-license-2.0.php"
+         "http://www.perlfoundation.org/artistic_license_2_0"
       ]
    },
-   "version" : "3.00"
+   "version" : "3.01"
 }
