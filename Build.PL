@@ -34,7 +34,7 @@ $class -> new
 	{
 		'DBIx::Admin::CreateTable' => 2.09,
 		'DBIx::Admin::DSNManager'  => 2.00,
-	}
+	},
 	build_requires =>
 	{
 		'Test::More'    => 0,
