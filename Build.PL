@@ -47,12 +47,13 @@ $class -> new
 	},
 	requires =>
 	{
-		'Data::Dumper::Concise' => 2.021,
-		'DBI'                   => 0,
-		'Moo'                   => 1.004002,
-		'strict'                => 0,
-		'Text::TabularDisplay'  => 1.38,
-		'warnings'              => 0,
+		'Data::Dumper::Concise'        => 2.022,
+		'DBI'                          => 0,
+		'Lingua::EN::PluralToSingular' => 0.14,
+		'Moo'                          => 1.004002,
+		'strict'                       => 0,
+		'Text::TabularDisplay'         => 1.38,
+		'warnings'                     => 0,
 	},
 	resources =>
 	{

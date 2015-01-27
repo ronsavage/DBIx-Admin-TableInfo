@@ -30,17 +30,18 @@ my(%params) =
 	PL_FILES		=> {},
 	PREREQ_PM		=>
 	{
-		'Data::Dumper::Concise'    => 2.021,
-		'DBI'                      => 0,
-		'DBIx::Admin::CreateTable' => 2.09,
-		'DBIx::Admin::DSNManager'  => 2.00,
-		'Moo'                      => 1.004002,
-		'strict'                   => 0,
-		'Test::More'   	           => 0,
-#		'Test::Pod'	               => 1.45, # Make it optional. See t/pod.t
-		'Test::Version'            => 1.002003,
-		'Text::TabularDisplay'     => 1.38,
-		'warnings'                 => 0,
+		'Data::Dumper::Concise'        => 2.022,
+		'DBI'                          => 0,
+		'DBIx::Admin::CreateTable'     => 2.09,
+		'DBIx::Admin::DSNManager'      => 2.00,
+		'Lingua::EN::PluralToSingular' => 0.14,
+		'Moo'                          => 1.004002,
+		'strict'                       => 0,
+		'Test::More'       	           => 0,
+#		'Test::Pod'	                   => 1.45, # Make it optional. See t/pod.t
+		'Test::Version'                => 1.002003,
+		'Text::TabularDisplay'         => 1.38,
+		'warnings'                     => 0,
 	},
 	VERSION_FROM	=> 'lib/DBIx/Admin/TableInfo.pm',
 );

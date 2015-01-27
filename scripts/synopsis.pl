@@ -1,10 +1,7 @@
 #!/usr/bin/env perl
 
-use 5.018;
 use strict;
 use warnings;
-
-use Data::Dumper::Concise; # For Dumper().
 
 use DBI;
 use DBIx::Admin::TableInfo 2.10;
@@ -95,7 +92,7 @@ my(@header) =
 );
 for my $table_name (sort keys %$info)
 {
-	say "Table: $table_name: ";
+	print "Table: $table_name: \n";
 
 	my($table) = Text::TabularDisplay -> new(@header);
 
@@ -113,6 +110,6 @@ for my $table_name (sort keys %$info)
 		);
 	}
 
-	say $table -> render;
+	print $table -> render, "\n\n";
 }
 
