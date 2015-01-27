@@ -3,27 +3,28 @@ abstract: 'A wrapper for all of table_info(), column_info(), *_key_info()'
 author:
   - 'Ron Savage <ron@savage.net.au>'
 build_requires:
-  Test::More: 0
-  Test::Version: 1.002003
+  Test::More: '0'
+  Test::Version: '1.002003'
 configure_requires:
-  Module::Build: 0.38
+  Module::Build: '0.38'
 dynamic_config: 1
-generated_by: 'Module::Build version 0.4206, CPAN::Meta::Converter version 2.133380'
+generated_by: 'Module::Build version 0.4211, CPAN::Meta::Converter version 2.142060'
 license: artistic_2
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
-  version: 1.4
+  version: '1.4'
 name: DBIx-Admin-TableInfo
 provides:
   DBIx::Admin::TableInfo:
     file: lib/DBIx/Admin/TableInfo.pm
-    version: 3.00
+    version: '3.01'
 requires:
-  DBI: 0
-  Data::Dumper::Concise: 2.021
-  Moo: 1.004002
-  strict: 0
-  warnings: 0
+  DBI: '0'
+  Data::Dumper::Concise: '2.021'
+  Moo: '1.004002'
+  Text::TabularDisplay: '1.38'
+  strict: '0'
+  warnings: '0'
 resources:
-  license: http://opensource.org/licenses/artistic-license-2.0.php
-version: 3.00
+  license: http://www.perlfoundation.org/artistic_license_2_0
+version: '3.01'
