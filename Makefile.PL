@@ -3,10 +3,12 @@ use warnings;
 
 use ExtUtils::MakeMaker;
 
+# -----------------------------------------------
+
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
 
-WriteMakefile
+my(%params) =
 (
 	($] ge '5.005') ?
 	(
@@ -37,7 +39,37 @@ WriteMakefile
 		'Test::More'   	           => 0,
 #		'Test::Pod'	               => 1.45, # Make it optional. See t/pod.t
 		'Test::Version'            => 1.002003,
+		'Text::TabularDisplay'     => 1.38,
 		'warnings'                 => 0,
 	},
 	VERSION_FROM	=> 'lib/DBIx/Admin/TableInfo.pm',
 );
+
+if ( ($ExtUtils::MakeMaker::VERSION =~ /^\d\.\d\d$/) && ($ExtUtils::MakeMaker::VERSION > 6.30) )
+{
+	$params{LICENSE} = 'artistic_2';
+}
+
+if ($ExtUtils::MakeMaker::VERSION ge '6.46')
+{
+	$params{META_MERGE} =
+	{
+		'meta-spec' =>
+		{
+			version => 2,
+		},
+		resources   =>
+		{
+			bugtracker => 'https://rt.cpan.org/Public/Dist/Display.html?Name=DBIx-Admin-TableInfo',
+			license    => 'http://opensource.org/licenses/Artistic-2.0',
+			repository =>
+			{
+				type => 'git',
+				url  => 'https://github.com/ronsavage/DBIx-Admin-TableInfo.git',
+				web  => 'https://github.com/ronsavage/DBIx-Admin-TableInfo',
+			},
+		},
+	};
+}
+
+WriteMakefile(%params);

@@ -50,7 +50,7 @@ has type =>
 	required => 0,
 );
 
-our $VERSION = '3.00';
+our $VERSION = '3.01';
 
 # -----------------------------------------------
 
@@ -288,10 +288,11 @@ DBIx::Admin::TableInfo - A wrapper for all of table_info(), column_info(), *_key
 
 	print Dumper(DBIx::Admin::TableInfo -> new(dbh => $dbh) -> info() );
 
-If the environment vaiables DBI_DSN, DBI_USER and DBI_PASS are set (the latter 2 are optional [e.g. for SQLite),
-then this demonstrates extracting a lot of information from a database schema.
+If the environment vaiables DBI_DSN, DBI_USER and DBI_PASS are set (the latter 2 are optional [e.g.
+for SQLite), then this demonstrates extracting a lot of information from a database schema.
 
-Also, for Postgres, you can set DBI_SCHEMA to a list of schemas, e.g. when processing the MusicBrainz database.
+Also, for Postgres, you can set DBI_SCHEMA to a list of schemas, e.g. when processing the
+MusicBrainz database.
 
 For details, see L<http://blogs.perl.org/users/ron_savage/2013/03/graphviz2-and-the-dread-musicbrainz-db.html>.
 
@@ -398,8 +399,9 @@ The default value is undef.
 
 undef was chosen because it given the best results with MySQL.
 
-Note: The MySQL driver DBD::mysql V 2.9002 has a bug in it, in that it aborts if an empty string is used here,
-even though the DBI docs say an empty string can be used for the catalog parameter to C<table_info()>.
+Note: The MySQL driver DBD::mysql V 2.9002 has a bug in it, in that it aborts if an empty string is
+used here, even though the DBI docs say an empty string can be used for the catalog parameter to
+C<table_info()>.
 
 This parameter is optional.
 
@@ -454,7 +456,8 @@ Returns an array ref of column names.
 
 By default they are sorted by name.
 
-However, if you pass in a true value for $by_position, they are sorted by the column attribute ORDINAL_POSITION. This is Postgres-specific.
+However, if you pass in a true value for $by_position, they are sorted by the column attribute
+ORDINAL_POSITION. This is Postgres-specific.
 
 =head2 dbh2schema($dbh)
 
@@ -500,19 +503,20 @@ The keys of this hash ref are determined by the database server.
 
 	my($columns) = $$info{$table_name}{columns};
 
-This is a hash ref of the columns of the table. The keys of this hash ref are the names of the columns.
+This is a hash ref of the columns of the table. The keys of this hash ref are the names of the
+columns.
 
 	my($foreign_keys) = $$info{$table_name}{foreign_keys};
 
-This is a hash ref of the foreign keys of the table. The keys of this hash ref are the names of the tables
-which contain foreign keys pointing to $table_name.
+This is a hash ref of the foreign keys of the table. The keys of this hash ref are the names of the
+tables which contain foreign keys pointing to $table_name.
 
 For MySQL, $foreign_keys will be the empty hash ref {}, as explained above.
 
 	my($primary_keys) = $$info{$table_name}{primary_keys};
 
-This is a hash ref of the primary keys of the table. The keys of this hash ref are the names of the columns
-which make up the primary key of $table_name.
+This is a hash ref of the primary keys of the table. The keys of this hash ref are the names of the
+columns which make up the primary key of $table_name.
 
 For any database server, if there is more than 1 column in the primary key, they will be numbered
 (ordered) according to the hash key 'KEY_SEQ'.
@@ -681,7 +685,8 @@ See the examples/ directory in the distro.
 	|  SQLite  |   3.8.4.1   |
 	+----------|-------------+
 
-But see these L<warnings|https://metacpan.org/pod/DBIx::Admin::TableInfo#Description> when using MySQL/MariaDB.
+But see these L<warnings|https://metacpan.org/pod/DBIx::Admin::TableInfo#Description> when using
+MySQL/MariaDB.
 
 =head2 Which tables are ignored for which databases?
 
@@ -695,7 +700,8 @@ Here is the code which skips some tables:
 
 Note: The table names here come from xt/author/person.spouse.t.
 
-See L<DBIx::Admin::CreateTable/FAQ> for database server-specific create statements to activate foreign keys.
+See L<DBIx::Admin::CreateTable/FAQ> for database server-specific create statements to activate
+foreign keys.
 
 Then try:
 
@@ -732,7 +738,8 @@ L<https://metacpan.org/pod/DBI#foreign_key_info>. Look closely at the usage of t
 	  }
 	]
 
-Yes, there is just 1 element in this arrayref. MySQL can sliently drop an index if another index can be used.
+Yes, there is just 1 element in this arrayref. MySQL can sliently drop an index if another index
+can be used.
 
 =item o Postgres
 
@@ -824,14 +831,15 @@ Yes, there is just 1 element in this arrayref. MySQL can sliently drop an index 
 
 You can also play with xt/author/fk.t and xt/author/dsn.ini (especially the 'active' option).
 
-fk.t does not delete the tables as it exits. This is so xt/author/mysql.fk.pl has something to play with.
+fk.t does not delete the tables as it exits. This is so xt/author/mysql.fk.pl has something to play
+with.
 
 See also xt/author/person.spouse.t.
 
 =head2 Does DBIx::Admin::TableInfo work with SQLite databases?
 
-Yes. As of V 2.08, this module uses the SQLite code "pragma foreign_key_list($table_name)" to emulate the L<DBI>
-call to foreign_key_info(...).
+Yes. As of V 2.08, this module uses the SQLite code "pragma foreign_key_list($table_name)" to
+emulate the L<DBI> call to foreign_key_info(...).
 
 =head2 What is returned by the SQLite "pragma foreign_key_list($table_name)" call?
 
@@ -846,7 +854,8 @@ An arrayref is returned. Indexes and their interpretations:
 	6: DELETE_RULE
 	7: 'NONE' (Constant string)
 
-As these are stored in an arrayref, I use $$row[$i] just below to refer to the elements of the array.
+As these are stored in an arrayref, I use $$row[$i] just below to refer to the elements of the
+array.
 
 =head2 How are these values mapped into the output?
 
@@ -889,11 +898,12 @@ This list of keys matches what is returned when processing a Postgres database.
 
 I certainly hope not. To me the FK_TABLE_NAME points to the UK_TABLE_NAME.
 
-The "pragma foreign_key_list($table_name)" call for SQLite returns data from the create statement, and thus it
-reports what the given table points to. The DBI call to foreign_key_info(...) returns data about foreign keys
-referencing (pointing to) the given table. This can be confusing.
+The "pragma foreign_key_list($table_name)" call for SQLite returns data from the create statement,
+and thus it reports what the given table points to. The DBI call to foreign_key_info(...) returns
+data about foreign keys referencing (pointing to) the given table. This can be confusing.
 
-Here is a method from the module L<App::Office::Contacts::Util::Create>, part of L<App::Office::Contacts>.
+Here is a method from the module L<App::Office::Contacts::Util::Create>, part of
+L<App::Office::Contacts>.
 
 	sub create_organizations_table
 	{
@@ -929,7 +939,8 @@ Consider this line:
 
 	visibility_id integer not null references visibilities(id),
 
-That means, for the 'visibilities' table, the info() method in the current module will return a hashref like:
+That means, for the 'visibilities' table, the info() method in the current module will return a
+hashref like:
 
 	{
 		visibilities =>
@@ -961,9 +972,9 @@ That means, for the 'visibilities' table, the info() method in the current modul
 			},
 	}
 
-This is saying that for the table 'visibilities', there is a foreign key in the 'organizations' table.
-That foreign key is called 'visibility_id', and it points to the key called 'id' in the 'visibilities'
-table.
+This is saying that for the table 'visibilities', there is a foreign key in the 'organizations'
+table. That foreign key is called 'visibility_id', and it points to the key called 'id' in the
+'visibilities' table.
 
 =head2 How do I use schemas in Postgres?
 
@@ -986,6 +997,10 @@ L<DBIx::Admin::DSNManager>.
 =head1 Version Numbers
 
 Version numbers < 1.00 represent development versions. From 1.00 up, they are production versions.
+
+=head1 Repository
+
+L<https://github.com/ronsavage/DBIx-Admin-TableInfo>
 
 =head1 Support
 

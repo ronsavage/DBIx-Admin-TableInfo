@@ -3,6 +3,8 @@ use warnings;
 
 use Module::Build;
 
+# -----------------------------------------------
+
 my $class = Module::Build->subclass(code => <<'EOF');
 
 sub ACTION_authortest
@@ -24,10 +26,15 @@ EOF
 
 $class -> new
 (
-	module_name    => 'DBIx::Admin::TableInfo',
-	license        => 'artistic_2',
-	dist_abstract  => 'A wrapper for all of table_info(), column_info(), *_key_info()',
-	dist_author    => 'Ron Savage <ron@savage.net.au>',
+	module_name          => 'DBIx::Admin::TableInfo',
+	license              => 'artistic_2',
+	dist_abstract        => 'A wrapper for all of table_info(), column_info(), *_key_info()',
+	dist_author          => 'Ron Savage <ron@savage.net.au>',
+	author_test_requires =>
+	{
+		'DBIx::Admin::CreateTable' => 2.09,
+		'DBIx::Admin::DSNManager'  => 2.00,
+	}
 	build_requires =>
 	{
 		'Test::More'    => 0,
@@ -44,11 +51,13 @@ $class -> new
 		'DBI'                   => 0,
 		'Moo'                   => 1.004002,
 		'strict'                => 0,
+		'Text::TabularDisplay'  => 1.38,
 		'warnings'              => 0,
 	},
-	author_test_requires =>
+	resources =>
 	{
-		'DBIx::Admin::CreateTable' => 2.09,
-		'DBIx::Admin::DSNManager'  => 2.00,
-	}
+		bugtracker => 'https://rt.cpan.org/Public/Dist/Display.html?Name=DBIx-Admin-TableInfo',
+		license    => 'http://opensource.org/licenses/Artistic-2.0',
+		repository => 'https://github.com/ronsavage/DBIx-Admin-TableInfo',
+	},
 ) -> create_build_script();
