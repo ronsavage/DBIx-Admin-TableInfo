@@ -4,6 +4,7 @@ Revision history for Perl extension DBIx::Admin::TableInfo.
 	- Add scripts/synopsis.pl, which uses Text::TabularDisplay for nice boxed-with-ASCII rendering.
 	- Reformat the docs and this file to be <= 100 chars per line. My new standard.
 	- Add link to github repo in docs, Build.PL and Makefile.PL.
+	- Add LICENSE from github to MANIFEST.
 
 3.00  Wed Aug  6 09:45:00 2014
 	- Change the internal data structure returned by method info(), where it pertains to foreign

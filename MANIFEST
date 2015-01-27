@@ -4,6 +4,7 @@ Changes
 docs/contacts.pg.log
 docs/contacts.sqlite.log
 lib/DBIx/Admin/TableInfo.pm
+LICENSE
 Makefile.PL
 MANIFEST			This list of files
 META.json
