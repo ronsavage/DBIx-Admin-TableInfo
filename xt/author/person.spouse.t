@@ -96,7 +96,7 @@ for my $db (keys %$config)
 			$sql = <<SQL;
 create table $table_name
 (
-	id   $primary_key not null,
+	id   $primary_key,
 	data varchar(255)
 ) $engine
 SQL
@@ -106,9 +106,9 @@ SQL
 			$sql = <<SQL;
 create table $table_name
 (
-	id        $primary_key not null,
-	person_id integer not null, index(person_id), foreign key(person_id) references people(id),
-	spouse_id integer not null, index(spouse_id), foreign key(spouse_id) references people(id)
+	id        $primary_key,
+	person_id integer, index(person_id), foreign key(person_id) references people(id),
+	spouse_id integer, index(spouse_id), foreign key(spouse_id) references people(id)
 ) $engine
 SQL
 		}
