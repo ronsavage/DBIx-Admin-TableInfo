@@ -1,3 +1,4 @@
+.gitignore
 Build.PL
 Changelog.ini
 Changes
@@ -11,6 +12,7 @@ META.json
 META.yml
 README
 scripts/pod2html.sh
+scripts/synopsis.pl
 t/load.t
 t/version.t
 xt/author/dsn.ini

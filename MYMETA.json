@@ -4,7 +4,7 @@
       "Ron Savage <ron@savage.net.au>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Module::Build version 0.4206",
+   "generated_by" : "Module::Build version 0.4211",
    "license" : [
       "artistic_2"
    ],
@@ -30,6 +30,7 @@
             "DBI" : "0",
             "Data::Dumper::Concise" : "2.021",
             "Moo" : "1.004002",
+            "Text::TabularDisplay" : "1.38",
             "strict" : "0",
             "warnings" : "0"
          }
