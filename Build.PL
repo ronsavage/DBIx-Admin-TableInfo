@@ -32,8 +32,8 @@ $class -> new
 	dist_author          => 'Ron Savage <ron@savage.net.au>',
 	author_test_requires =>
 	{
-		'DBIx::Admin::CreateTable' => 2.09,
-		'DBIx::Admin::DSNManager'  => 2.00,
+		'DBIx::Admin::CreateTable' => 2.10,
+		'DBIx::Admin::DSNManager'  => 2.01,
 	},
 	build_requires =>
 	{

@@ -32,8 +32,8 @@ my(%params) =
 	{
 		'Data::Dumper::Concise'        => 2.022,
 		'DBI'                          => 0,
-		'DBIx::Admin::CreateTable'     => 2.09,
-		'DBIx::Admin::DSNManager'      => 2.00,
+		'DBIx::Admin::CreateTable'     => 2.10,
+		'DBIx::Admin::DSNManager'      => 2.01,
 		'Lingua::EN::PluralToSingular' => 0.14,
 		'Moo'                          => 1.004002,
 		'strict'                       => 0,

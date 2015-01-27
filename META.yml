@@ -20,7 +20,8 @@ provides:
     version: '3.01'
 requires:
   DBI: '0'
-  Data::Dumper::Concise: '2.021'
+  Data::Dumper::Concise: '2.022'
+  Lingua::EN::PluralToSingular: '0.14'
   Moo: '1.004002'
   Text::TabularDisplay: '1.38'
   strict: '0'
