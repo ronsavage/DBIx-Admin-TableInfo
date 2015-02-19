@@ -11,6 +11,7 @@ MANIFEST			This list of files
 META.json
 META.yml
 README
+scripts/output2github.pl
 scripts/pod2html.sh
 scripts/synopsis.pl
 t/load.t

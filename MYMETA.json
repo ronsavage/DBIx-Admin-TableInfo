@@ -31,7 +31,7 @@
             "Data::Dumper::Concise" : "2.022",
             "Lingua::EN::PluralToSingular" : "0.14",
             "Moo" : "1.004002",
-            "Text::TabularDisplay" : "1.38",
+            "Text::Table::Manifold" : "1",
             "strict" : "0",
             "warnings" : "0"
          }
