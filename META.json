@@ -31,7 +31,7 @@
             "Data::Dumper::Concise" : "2.022",
             "Lingua::EN::PluralToSingular" : "0.14",
             "Moo" : "1.004002",
-            "Text::TabularDisplay" : "1.38",
+            "Text::Table::Manifold" : "1",
             "strict" : "0",
             "warnings" : "0"
          }
@@ -40,7 +40,7 @@
    "provides" : {
       "DBIx::Admin::TableInfo" : {
          "file" : "lib/DBIx/Admin/TableInfo.pm",
-         "version" : "3.01"
+         "version" : "3.02"
       }
    },
    "release_status" : "stable",
@@ -49,5 +49,5 @@
          "http://www.perlfoundation.org/artistic_license_2_0"
       ]
    },
-   "version" : "3.01"
+   "version" : "3.02"
 }
