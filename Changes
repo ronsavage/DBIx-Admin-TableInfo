@@ -1,5 +1,10 @@
 Revision history for Perl extension DBIx::Admin::TableInfo.
 
+3.02  Wed Feb 18 16:32:00 2015
+	- Switch from Text::TabularDisplay to Text::Table::Manifold.
+	- Add scripts/output2github.pl, to demonstrate outputting in a github-compatible format.
+	- Remove all references to mysql_* hash keys in scripts/*.pl.
+
 3.01  Tue Jan 27 11:10:00 2015
 	- Add scripts/synopsis.pl, which uses Text::TabularDisplay for nice boxed-with-ASCII rendering.
 	- Reformat the docs and this file to be <= 100 chars per line. My new standard.

@@ -52,7 +52,7 @@ $class -> new
 		'Lingua::EN::PluralToSingular' => 0.14,
 		'Moo'                          => 1.004002,
 		'strict'                       => 0,
-		'Text::TabularDisplay'         => 1.38,
+		'Text::Table::Manifold'        => 1.00,
 		'warnings'                     => 0,
 	},
 	resources =>

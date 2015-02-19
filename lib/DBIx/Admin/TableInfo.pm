@@ -48,7 +48,7 @@ has type =>
 	required => 0,
 );
 
-our $VERSION = '3.01';
+our $VERSION = '3.02';
 
 # -----------------------------------------------
 
@@ -275,11 +275,11 @@ This is scripts/synopsis.pl:
 	use warnings;
 
 	use DBI;
-	use DBIx::Admin::TableInfo 2.10;
+	use DBIx::Admin::TableInfo 3.02;
 
 	use Lingua::EN::PluralToSingular 'to_singular';
 
-	use Text::TabularDisplay;
+	use Text::Table::Manifold ':constants';
 
 	# ---------------------
 
@@ -357,31 +357,73 @@ This is scripts/synopsis.pl:
 	(
 		'Name',
 		'Type',
-		'Null?',
-		'Key?',
-		'Auto increment?',
+		'Null',
+		'Key',
+		'Auto-increment',
 	);
+
+	my($table) = Text::Table::Manifold -> new
+	(
+		alignment =>
+		[
+			align_left,
+			align_left,
+			align_left,
+			align_left,
+			align_left,
+		],
+		format => format_text_unicodebox_table,
+		headers => \@header,
+		join   => "\n",
+	);
+	my(%type) =
+	(
+		'character varying' => 'varchar',
+		'int(11)'           => 'integer',
+		'"timestamp"'       => 'timestamp',
+	);
+
+	my($auto_increment);
+	my(@data);
+	my($index);
+	my($nullable);
+	my($primary_key);
+	my($type);
+
 	for my $table_name (sort keys %$info)
 	{
-		print "Table: $table_name: \n";
+		print "Table: $table_name.\n\n";
 
-		my($table) = Text::TabularDisplay -> new(@header);
+		@data  = ();
+		$index = undef;
 
-		my(@data);
-
-		for my $column_name (sort map{s/^"(.+)"$/$1/; $_} keys %{$$info{$table_name}{columns} })
+		for my $column_name (keys %{$$info{$table_name}{columns} })
 		{
-			$table -> add
-			(
+			$type           = $$info{$table_name}{columns}{$column_name}{TYPE_NAME};
+			$type           = $type{$type} ? $type{$type} : $type;
+			$nullable       = $$info{$table_name}{columns}{$column_name}{IS_NULLABLE} eq 'NO';
+			$primary_key    = $$info{$table_name}{primary_keys}{$column_name};
+			$auto_increment = $primary_key; # Database server-independent kludge :-(.
+
+			push @data,
+			[
 				$column_name,
-				$$info{$table_name}{columns}{$column_name}{mysql_type_name},
-				$$info{$table_name}{columns}{$column_name}{IS_NULLABLE} eq 'NO'     ? 'not null'       : '',
-				$$info{$table_name}{columns}{$column_name}{mysql_is_pri_key}        ? 'primary key'    : '',
-				$$info{$table_name}{columns}{$column_name}{mysql_is_auto_increment} ? 'auto_increment' : '',
-			);
+				$type,
+				$nullable       ? 'not null'       : '',
+				$primary_key    ? 'primary key'    : '',
+				$auto_increment ? 'auto_increment' : '',
+			];
+
+			$index = pop @data if ($column_name eq 'id');
 		}
 
-		print $table -> render, "\n\n";
+		@data = sort{$$a[0] cmp $$b[0]} @data;
+
+		unshift @data, $index if ($index);
+
+		$table -> data(\@data);
+
+		print $table -> render_as_string, "\n\n";
 	}
 
 If the environment vaiables DBI_DSN, DBI_USER and DBI_PASS are set (the latter 2 are optional [e.g.

@@ -40,7 +40,7 @@ my(%params) =
 		'Test::More'       	           => 0,
 #		'Test::Pod'	                   => 1.45, # Make it optional. See t/pod.t
 		'Test::Version'                => 1.002003,
-		'Text::TabularDisplay'         => 1.38,
+		'Text::Table::Manifold'        => 1.00,
 		'warnings'                     => 0,
 	},
 	VERSION_FROM	=> 'lib/DBIx/Admin/TableInfo.pm',
