@@ -14,7 +14,7 @@ my(%params) =
 	(
 		'AUTHOR'	=> 'Ron Savage (ron@savage.net.au)',
 		'ABSTRACT'	=> 'A wrapper for all of table_info(), column_info(), *_key_info()',
-    ) : (),
+		) : (),
 	clean			=>
 	{
 		FILES		=> 'blib/* Makefile MANIFEST DBIx-Admin-TableInfo-*'
@@ -30,20 +30,20 @@ my(%params) =
 	PL_FILES		=> {},
 	PREREQ_PM		=>
 	{
-		'Data::Dumper::Concise'        => 2.022,
-		'DBI'                          => 0,
-		'DBIx::Admin::CreateTable'     => 2.10,
-		'DBIx::Admin::DSNManager'      => 2.01,
+		'Data::Dumper::Concise' => 2.022,
+		'DBI' => 0,
+		'DBIx::Admin::CreateTable' => 2.10,
+		'DBIx::Admin::DSNManager' => 2.01,
 		'Lingua::EN::PluralToSingular' => 0.14,
-		'Moo'                          => 1.004002,
-		'strict'                       => 0,
-		'Test::More'       	           => 0,
-#		'Test::Pod'	                   => 1.45, # Make it optional. See t/pod.t
-		'Test::Version'                => 1.002003,
-		'Text::Table::Manifold'        => 1.00,
-		'warnings'                     => 0,
+		'Moo' => 1.004002,
+		'strict' => 0,
+		'Test::More' => 1.001014,
+		'Test::Pod' => 1.48,
+		'Test::Version' => 1.002003,
+		'Text::Table::Manifold' => 1.00,
+		'warnings' => 0,
 	},
-	VERSION_FROM	=> 'lib/DBIx/Admin/TableInfo.pm',
+	VERSION_FROM => 'lib/DBIx/Admin/TableInfo.pm',
 );
 
 if ( ($ExtUtils::MakeMaker::VERSION =~ /^\d\.\d\d$/) && ($ExtUtils::MakeMaker::VERSION > 6.30) )
@@ -57,17 +57,17 @@ if ($ExtUtils::MakeMaker::VERSION ge '6.46')
 	{
 		'meta-spec' =>
 		{
-			version => 2,
+		'version' => 2,
 		},
 		resources   =>
 		{
-			bugtracker => 'https://rt.cpan.org/Public/Dist/Display.html?Name=DBIx-Admin-TableInfo',
-			license    => 'http://opensource.org/licenses/Artistic-2.0',
+		'bugtracker' => 'https://rt.cpan.org/Public/Dist/Display.html?Name=DBIx-Admin-TableInfo',
+		'license' => 'http://opensource.org/licenses/Artistic-2.0',
 			repository =>
 			{
-				type => 'git',
-				url  => 'https://github.com/ronsavage/DBIx-Admin-TableInfo.git',
-				web  => 'https://github.com/ronsavage/DBIx-Admin-TableInfo',
+		'type' => 'git',
+		'url' => 'https://github.com/ronsavage/DBIx-Admin-TableInfo.git',
+		'web' => 'https://github.com/ronsavage/DBIx-Admin-TableInfo',
 			},
 		},
 	};

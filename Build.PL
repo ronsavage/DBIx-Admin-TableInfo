@@ -33,32 +33,32 @@ $class -> new
 	author_test_requires =>
 	{
 		'DBIx::Admin::CreateTable' => 2.10,
-		'DBIx::Admin::DSNManager'  => 2.01,
+		'DBIx::Admin::DSNManager' => 2.01,
 	},
 	build_requires =>
 	{
-		'Test::More'    => 0,
-#		'Test::Pod'     => 1.45, # Make it optional. See t/pod.t
+		'Test::More' => 1.001014,
+		'Test::Pod' => 1.48,
 		'Test::Version' => 1.002003,
 	},
 	configure_requires =>
 	{
-		'Module::Build' => 0.3800,
+		'Module::Build' => 0.4211,
 	},
 	requires =>
 	{
-		'Data::Dumper::Concise'        => 2.022,
-		'DBI'                          => 0,
+		'Data::Dumper::Concise' => 2.022,
+		'DBI' => 0,
 		'Lingua::EN::PluralToSingular' => 0.14,
-		'Moo'                          => 1.004002,
-		'strict'                       => 0,
-		'Text::Table::Manifold'        => 1.00,
-		'warnings'                     => 0,
+		'Moo' => 1.004002,
+		'strict' => 0,
+		'Text::Table::Manifold' => 1.00,
+		'warnings' => 0,
 	},
 	resources =>
 	{
-		bugtracker => 'https://rt.cpan.org/Public/Dist/Display.html?Name=DBIx-Admin-TableInfo',
-		license    => 'http://opensource.org/licenses/Artistic-2.0',
-		repository => 'https://github.com/ronsavage/DBIx-Admin-TableInfo',
+		'bugtracker' => 'https://rt.cpan.org/Public/Dist/Display.html?Name=DBIx-Admin-TableInfo',
+		'license' => 'http://opensource.org/licenses/Artistic-2.0',
+		'repository' => 'https://github.com/ronsavage/DBIx-Admin-TableInfo',
 	},
 ) -> create_build_script();
