@@ -5,18 +5,18 @@ Revision history for Perl extension DBIx::Admin::TableInfo.
 	- Adopt new repo structure. This includes changing the licence from Artistic to Perl. See
 		http://savage.net.au/Ron/html/My.Workflow.for.Building.Distros.html.
 
-3.02  Wed Feb 18 16:32:00 2015
+3.02  2015-02-18T16:32:00
 	- Switch from Text::TabularDisplay to Text::Table::Manifold.
 	- Add scripts/output2github.pl, to demonstrate outputting in a github-compatible format.
 	- Remove all references to mysql_* hash keys in scripts/*.pl.
 
-3.01  Tue Jan 27 11:10:00 2015
+3.01  2015-01-27T11:10:00
 	- Add scripts/synopsis.pl, which uses Text::TabularDisplay for nice boxed-with-ASCII rendering.
 	- Reformat the docs and this file to be <= 100 chars per line. My new standard.
 	- Add link to github repo in docs, Build.PL and Makefile.PL.
 	- Add LICENSE from github to MANIFEST.
 
-3.00  Wed Aug  6 09:45:00 2014
+3.00  2014-08-06T09:45:00
 	- Change the internal data structure returned by method info(), where it pertains to foreign
 		keys. The old code returned a hashref $$info{$table_name}{foreign_keys}{$foreign_table}.
 		This is a bug, since it limits the code to one relationship between $table_name and
@@ -31,14 +31,14 @@ Revision history for Perl extension DBIx::Admin::TableInfo.
 	- Update docs for method info(), and in reference to versions of MySQL, Pg and SQLite tested.
 	- Remove docs for DBD::mysql V 3.
 
-2.12  Tue Jul 22 18:34:00 2014
+2.12  2014-07-22T18:34:00
 	- Change the licence (sic) statement in DBIx::Admin::TableInfo to say 'The Artistic License 2.0'
 		rather than just 'The Artistic License'. See RT#97392. Thanx to Petr Pisar for the report.
 
-2.11  Mon Mar 10 13:30:55 2014
+2.11  2014-03-10T13:30:55
 	- Add Test::Version to the pre-reqs.
 
-2.10  Thu Mar  6 09:45:07 2014
+2.10  2014-03-06T09:45:07
 	- Rename CHANGES to Changes as per CPAN::Spec::Changes.
 	- Move t/pod.t to xt/author/.
 	- Add t/version.t.
@@ -50,14 +50,14 @@ Revision history for Perl extension DBIx::Admin::TableInfo.
 	- Add xt/author/create.analyze.t to explicitly add a table to the 'testdb' and report on it.
 		It uses xt/author/dsn.ini to test MySQL, Pg and SQLite.
 
-2.09  Thu Mar 21 13:16:00 2013
+2.09  2013-03-21T13:16:00
 	- Add $ENV{DBI_SCHEMA} to examples/table.info.pl.
 	- For the MusicBrainz database, use DBI_SCHEMA=musicbrainz,cover_art_archive,report,statistics.
 		See http://musicbrainz.org/doc/MusicBrainz_Database for details.
 		Users of cpanm will want 'cpanm Carton' instead of 'sudo cpan Carton' in Perl dependencies.
 		See https://github.com/metabrainz/musicbrainz-server/blob/master/INSTALL.md for details.
 
-2.08  Thu Mar 14 15:02:00 2013
+2.08  2013-03-14T15:02:00
 	- Add Postgres to list of databases which have special tables skipped.
 	- Extend to handle foreign keys in SQLite, using "pragma foreign_key_list($table_name)".
 	- Add an FAQ to explain more about foreign keys and tables with special (i.e. ignored) names.
@@ -70,14 +70,14 @@ Revision history for Perl extension DBIx::Admin::TableInfo.
 	- 'Use Carp' in TableInfo.pm because with call croak().
 		At least I had already put Carp in Build.PL and Makefile.PL.
 
-2.06  Web Feb 16 11:46:00 2011
+2.06  2011-02-16T11:46:00
 	- Replace /usr/bin/perl with /usr/bin/env perl.
 	- Replace common::sense with use strict and use warnings, to get uninit var warnings.
 
-2.05  Fri Jun 25 11:27:00 2010
+2.05  2010-06-25T11:27:00
 	- The META.yml file shipped with V 2.04 was faulty. My apologies.
 
-2.04  Fri Jun 18 13:38:00 2010
+2.04  2010-06-18T13:38:00
 	- Test with Postgres V 08.03.1100 and DBD::Pg V 2.17.1.
 	- With Postgres, note the fact that the 'table' parameter to table_info()
 	  	   must now take the value '%' and not the value 'table'.
@@ -88,20 +88,20 @@ Revision history for Perl extension DBIx::Admin::TableInfo.
 	- Update docs in various ways.
 	- Rename table-info.pl to table.info.pl.
 
-2.03  Sun Feb 21 12:54:56 2010
+2.03  2010-02-21T12:54:56
 	- Remove text 'All rights reserved' (for Debian licensing).
 	- Remove POD heads 'Required Modules' and 'Changes'.
 	- Replace personal doc root with /var/www.
 	- Use namespace::autoclean with Moose.
 
-2.02  Wed Feb 10 14:01:44 2010
+2.02  2010-02-10T14:01:44
 	- MANIFEST.SKIP updated to exclude MYMETA.yml. Add MYMETA.yml.
 
-2.01  Fri Nov 13 13:20:00 2009
+2.01  2009-11-13T13:20:00
 	- Run dos2unix
 	- Rename Changes.txt to CHANGES
 
-2.00  Thu Apr 20 11:19:00 2006
+2.00  2006-04-20T11:19:00
 	- Add primary key info
 	- Add foreign key info
 	- Rename parameters to new():
@@ -121,7 +121,7 @@ Revision history for Perl extension DBIx::Admin::TableInfo.
 	- Rewrite examples/test-table-info.pl to use Data::Dumper
 	- Chop examples/test-table-info.cgi because it added nothing useful to the distro
 
-1.03  Thu Oct 27 19:40:00 2005
+1.03  2005-10-27T19:40:00
 	- Simplify code in new() to no longer check if caller is an object
 		as per the new standard on such matters
 	- Regenerate META.yml with Module::Build V 0.2611 to correct a faulty
@@ -130,16 +130,16 @@ Revision history for Perl extension DBIx::Admin::TableInfo.
 		which in turn meant this module might be omitted from the master index:
 		ftp://pause.perl.org/pub/PAUSE/modules/01modules.index.html
 
-1.02  Mon Jul 19 14:43:00 2004
+1.02  2004-07-19T14:43:00
 	- Change Makefile.PL to coexist with Module::Build
 	- Add comments to the POD about having tested against MySQL V 4, MS Access V 2 (sic) and MS
 		Access 2002
 	- Add t/pod.t to test all PODs
 
-1.01  Wed Mar  3 10:08:41 2004
+1.01  2004-03-03T10:08:41
 	- Add method refresh() to re-create internal data by re-calling DBI's table_info().
 		This has to be called after you change the database structure, eg by doing
 		'drop table <some table>' or something similar
 
-1.00  Tue Jan 21 12:37:29 2004
+1.00  2004-01-21T12:37:29
 	- Original version
