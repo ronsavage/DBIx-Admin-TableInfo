@@ -1,5 +1,10 @@
 Revision history for Perl extension DBIx::Admin::TableInfo.
 
+3.03  2016-09-04T11:17:00
+	- Add scripts/foreign.keys.pl.
+	- Adopt new repo structure. This includes changing the licence from Artistic to Perl. See
+		http://savage.net.au/Ron/html/My.Workflow.for.Building.Distros.html.
+
 3.02  Wed Feb 18 16:32:00 2015
 	- Switch from Text::TabularDisplay to Text::Table::Manifold.
 	- Add scripts/output2github.pl, to demonstrate outputting in a github-compatible format.

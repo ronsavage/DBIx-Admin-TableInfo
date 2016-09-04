@@ -15,40 +15,41 @@ my(%params) =
 		'AUTHOR'	=> 'Ron Savage (ron@savage.net.au)',
 		'ABSTRACT'	=> 'A wrapper for all of table_info(), column_info(), *_key_info()',
 		) : (),
-	clean			=>
+	clean =>
 	{
-		FILES		=> 'blib/* Makefile MANIFEST DBIx-Admin-TableInfo-*'
+		FILES => 'blib/* Makefile MANIFEST DBIx-Admin-TableInfo-*'
 	},
-	dist			=>
+	dist =>
 	{
 		COMPRESS	=> 'gzip',
 		SUFFIX		=> 'gz'
 	},
-	DISTNAME		=> 'DBIx-Admin-TableInfo',
-	NAME			=> 'DBIx::Admin::TableInfo',
-	LICENSE   => 'artistic_2',
-	PL_FILES		=> {},
-	PREREQ_PM		=>
+	DISTNAME	=> 'DBIx-Admin-TableInfo',
+	NAME		=> 'DBIx::Admin::TableInfo',
+	PL_FILES	=> {},
+	PREREQ_PM	=>
 	{
-		'Data::Dumper::Concise' => 2.022,
-		'DBI' => 0,
-		'DBIx::Admin::CreateTable' => 2.10,
-		'DBIx::Admin::DSNManager' => 2.01,
-		'Lingua::EN::PluralToSingular' => 0.14,
-		'Moo' => 1.004002,
-		'strict' => 0,
-		'Test::More' => 1.001014,
-		'Test::Pod' => 1.48,
-		'Test::Version' => 1.002003,
-		'Text::Table::Manifold' => 1.00,
-		'warnings' => 0,
+		'Data::Dumper::Concise'			=> 2.022,
+		'DBI'							=> 0,
+		'DBIx::Admin::CreateTable'		=> 2.10,
+		'DBIx::Admin::DSNManager'		=> 2.01,
+		'Lingua::EN::PluralToSingular'	=> 0.18,
+		'Moo'							=> 2.002004,
+		'strict'						=> 0,
+		'Text::Table::Manifold'			=> 1.00,
+		'warnings'						=> 0,
+	},
+	TESTING_REQUIRES =>
+	{
+		'Test::More'	=> 1.302052,
+		'Test::Pod'		=> 1.51,
 	},
 	VERSION_FROM => 'lib/DBIx/Admin/TableInfo.pm',
 );
 
 if ( ($ExtUtils::MakeMaker::VERSION =~ /^\d\.\d\d$/) && ($ExtUtils::MakeMaker::VERSION > 6.30) )
 {
-	$params{LICENSE} = 'artistic_2';
+	$params{LICENSE} = 'perl';
 }
 
 if ($ExtUtils::MakeMaker::VERSION ge '6.46')
@@ -57,17 +58,17 @@ if ($ExtUtils::MakeMaker::VERSION ge '6.46')
 	{
 		'meta-spec' =>
 		{
-		'version' => 2,
+			version => 2,
 		},
 		resources   =>
 		{
-		'bugtracker' => 'https://rt.cpan.org/Public/Dist/Display.html?Name=DBIx-Admin-TableInfo',
-		'license' => 'http://opensource.org/licenses/Artistic-2.0',
-			repository =>
+			bugtracker	=> 'https://rt.cpan.org/Public/Dist/Display.html?Name=DBIx-Admin-TableInfo',
+			license		=> 'http://dev.perl.org/licenses/',
+			repository	=>
 			{
-		'type' => 'git',
-		'url' => 'https://github.com/ronsavage/DBIx-Admin-TableInfo.git',
-		'web' => 'https://github.com/ronsavage/DBIx-Admin-TableInfo',
+				type	=> 'git',
+				url		=> 'https://github.com/ronsavage/DBIx-Admin-TableInfo.git',
+				web		=> 'https://github.com/ronsavage/DBIx-Admin-TableInfo',
 			},
 		},
 	};

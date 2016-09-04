@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use DBI;
-use DBIx::Admin::TableInfo 2.10;
+use DBIx::Admin::TableInfo 3.02;
 
 use Lingua::EN::PluralToSingular 'to_singular';
 
