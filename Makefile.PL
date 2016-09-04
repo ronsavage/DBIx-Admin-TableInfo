@@ -39,7 +39,7 @@ my(%params) =
 		'Text::Table::Manifold'			=> 1.00,
 		'warnings'						=> 0,
 	},
-	TESTING_REQUIRES =>
+	TEST_REQUIRES =>
 	{
 		'Test::More'	=> 1.302052,
 		'Test::Pod'		=> 1.51,
