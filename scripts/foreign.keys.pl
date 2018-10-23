@@ -3,8 +3,6 @@
 use strict;
 use warnings;
 
-use Data::Dumper::Concise; # For Dumper().
-
 use DBI;
 use DBIx::Admin::TableInfo 3.02;
 
@@ -82,20 +80,20 @@ for my $table_name (sort keys %$info)
 	}
 }
 
+print qq|"table_name","key_name","foreign_table","foreign_key"\n|;
+
 my($column_name);
 my($table_name);
 
 for $fk_table_name (sort keys %foreign_key)
 {
-	print "Table: $fk_table_name: Foreign keys: \n";
-
 	for $fk_column_name (sort keys %{$foreign_key{$fk_table_name} })
 	{
 		for $table_name (sort keys %{$foreign_key{$fk_table_name}{$fk_column_name} })
 		{
 			$column_name = $foreign_key{$fk_table_name}{$fk_column_name}{$table_name};
 
-			print "$fk_column_name => $table_name.$column_name \n";
+			print qq|"$fk_table_name","$fk_column_name","$table_name","$column_name"\n|;
 		}
 	}
 }
