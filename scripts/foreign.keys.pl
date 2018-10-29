@@ -80,7 +80,7 @@ for my $table_name (sort keys %$info)
 	}
 }
 
-print qq|"table_name","key_name","foreign_table","foreign_key"\n|;
+print qq|"table_name","foreign_key","primary_table","primary_key"\n|;
 
 my($column_name);
 my($table_name);
