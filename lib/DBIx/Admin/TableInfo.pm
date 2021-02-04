@@ -1157,7 +1157,9 @@ L<https://github.com/ronsavage/DBIx-Admin-TableInfo>
 
 =head1 Support
 
-Log a bug on RT: L<https://rt.cpan.org/Public/Dist/Display.html?Name=DBIx-Admin-TableInfo>.
+Bugs should be reported via the CPAN bug tracker at
+
+L<https://github.com/ronsavage/DBIx-Admin-TableInfo/issues>
 
 =head1 Author
 
